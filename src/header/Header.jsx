@@ -60,7 +60,7 @@ export default class Header extends ShallowComponent {
                             <Col style={{display: this.props.matches ? "none" : "inherit"}}>Nebula Acente Sistemi</Col>
                         </Link>
                         <Link to={window.applicationRootPath}>
-                            <Col style={{display: this.props.matches ? "inherit" : "none"}}>Robe</Col>
+                            <Col style={{display: this.props.matches ? "inherit" : "none"}}>Nebula</Col>
                         </Link>
                     </Col>
                     <Col className="pull-right">

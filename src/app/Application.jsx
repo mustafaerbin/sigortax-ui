@@ -43,7 +43,7 @@ export default class Application extends ShallowComponent {
         return (
             <Card >
                 <PageHeader>Todo App
-                    <small>robe-quick-start sample app</small>
+                    <small>nebula-quick-start sample app</small>
                 </PageHeader>
                 <TextInput
                     onKeyPress={ this.__onKeyPressParent }

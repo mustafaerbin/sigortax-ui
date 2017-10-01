@@ -3,7 +3,7 @@ import Card from "../../card/Card";
 import ShallowComponent from "robe-react-commons/lib/components/ShallowComponent";
 import {InputText} from 'primereact/components/inputtext/InputText';
 
-export default class Todoo extends Component {
+export default class Company extends Component {
 
 
     constructor(props) {
@@ -14,7 +14,7 @@ export default class Todoo extends Component {
 
     render() {
         return (
-            <Card header="Todo Yönetimi">
+            <Card header="Şirket Yönetimi">
                 <div>
 
 
