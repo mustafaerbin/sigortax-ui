@@ -13,6 +13,11 @@ import Toast from "robe-react-ui/lib/toast/Toast";
 import {Dropdown} from 'primereact/components/dropdown/Dropdown';
 import ReSelectInput from "../../components/selectinput/ReSelectInput";
 import {Modal} from "react-bootstrap";
+import CompanySubProduct from "../../parameter/companySubProduct/CompanySubProduct";
+import Calendar from "../../components/calendar/CalendarTR";
+//import {Calendar} from 'primereact/components/calendar/Calendar';
+import {FileUpload} from 'primereact/components/fileupload/FileUpload';
+import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 
 export default class Customer extends Component {
 
@@ -24,18 +29,19 @@ export default class Customer extends Component {
             selectedCustomer: {},
             policyAddButtonDisable: true,
             policy: null,
-            company: {}
+            company: {},
+            startDate: null,
+            loading: true,
         };
-        this.__save = this.__save.bind(this);
+        this.__saveCumstomer = this.__saveCumstomer.bind(this);
+        this.__savePolicy = this.__savePolicy.bind(this);
         this.onFilter = this.onFilter.bind(this);
         this.__newCustomerButton = this.__newCustomerButton.bind(this);
         this.__actionTemplate = this.__actionTemplate.bind(this);
         this.onPolicyCompanyChange = this.onPolicyCompanyChange.bind(this);
         this.__updateProperty = this.__updateProperty.bind(this);
         this.__addPolicyButton = this.__addPolicyButton.bind(this);
-        this.__handleChangeReSelectInputProductList = this.__handleChangeReSelectInputProductList.bind(this);
-        this.__handleChangecompanySubProductList = this.__handleChangecompanySubProductList.bind(this);
-
+        this.__handleChangeDropDownCompany = this.__handleChangeDropDownCompany.bind(this);
 
     }
 
@@ -70,6 +76,10 @@ export default class Customer extends Component {
         );
     }
 
+    onUpload(event) {
+        let eventa = event
+    }
+
     render() {
         let header =
             <div style={{'textAlign': 'left'}}>
@@ -90,7 +100,7 @@ export default class Customer extends Component {
 
         let dialogFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
-                <Button label="Kaydet" icon="fa-check" onClick={this.__save}
+                <Button label="Kaydet" icon="fa-check" onClick={this.__saveCumstomer}
                         className="ui-button-success"/>
                 <Button icon="fa-close" label="İptal"
                         onClick={() => {
@@ -107,7 +117,6 @@ export default class Customer extends Component {
                         }}
                 />
             </div>
-
 
         let dialogPolicyFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
@@ -152,7 +161,6 @@ export default class Customer extends Component {
 
                     {/*güncelle ve kaydet popup*/}
                     <div className="content-section implementation">
-
                         {
                             this.state.customer &&
                             <Modal show={this.state.displayDialog}
@@ -354,142 +362,189 @@ export default class Customer extends Component {
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="musteri">Müşteri</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.customer.name}{' '}{this.state.policy.customer.surname}
+                                                <label>{this.state.policy.customer.name}{' '}{this.state.policy.customer.surname}
+                                                </label>
                                             </div>
                                         </div>
 
+
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companyList">Sigorta Şirketi</label></div>
+                                                htmlFor="company">Şirket</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <ReSelectInput
-                                                    id="companyList"
-                                                    name="name"
-                                                    items={this.state.companyList}
-                                                    textField="name"
-                                                    valueField="id"
-                                                    value={this.state.policy.company}
-                                                    onChange={this.__handleChangeReSelectInputProductList}
+                                                <Dropdown
+                                                    value={this.state.policy.company.label}
+                                                    options={this.state.companyList}
+                                                    onChange={(e) => {
+                                                        this.__handleChangeDropDownCompany("company", e)
+                                                    }}
+                                                    style={{width: 'ui-grid-col-8'}}
+                                                    placeholder="Şirket Seçiniz"
+                                                    editable={true}
+                                                    filter={true}
+                                                    filterPlaceholder="Şirket Ara"
+                                                    filterBy="label,value"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companyProductList">Şirket Ürünü</label></div>
+                                                htmlFor="companyProduct">Şirket Ürünü</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <ReSelectInput
-                                                    id="companyProductList"
-                                                    name="name"
-                                                    items={this.state.companyProductList}
-                                                    textField="name"
-                                                    valueField="id"
-                                                    value={this.state.policy.companyProduct}
-                                                    onChange={this.__handleChangecompanySubProductList}
+                                                <Dropdown value={this.state.policy.companyProduct.label}
+                                                          options={this.state.companyProductList}
+                                                          onChange={(e) => {
+                                                              this.__handleChangeDropDownCompany("companyProduct", e)
+                                                          }}
+                                                          style={{width: 'ui-grid-col-8'}}
+                                                          placeholder="Ürün Seçiniz"
+                                                          editable={true}
+                                                          filter={true}
+                                                          filterPlaceholder="Ürün Ara"
+                                                          filterBy="label,value"
                                                 />
                                             </div>
                                         </div>
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companySubProductList">Şirket Alt Ürünü</label></div>
+                                                htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <ReSelectInput
-                                                    id="companySubProductList"
-                                                    name="name"
-                                                    items={this.state.companySubProductList}
-                                                    textField="name"
-                                                    valueField="id"
-                                                    value={this.state.policy.companySubProduct}
-                                                    onChange={this.__handleChangeReSelectInput}
+                                                <Dropdown value={this.state.policy.companySubProduct.label}
+                                                          options={this.state.companySubProductList}
+                                                          onChange={(e) => {
+                                                              this.__handleChangeDropDownCompany("companySubProduct", e)
+                                                          }}
+                                                          style={{width: 'ui-grid-col-8'}}
+                                                          placeholder="Alt Ürün Seçiniz"
+                                                          editable={true}
+                                                          filter={true}
+                                                          filterPlaceholder="Alt Ürün Ara"
+                                                          filterBy="label,value"
                                                 />
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="startDate">Poliçe Başlangıç Tarihi</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Calendar
+                                                    id="startDate"
+                                                    value={this.state.policy.startDate}
+                                                    onChange={(e) => {
+                                                        this.__calendarOnChange("startDate", e)
+                                                    }}>
+
+                                                </Calendar>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Calendar
+                                                    id="endDate"
+                                                    value={this.state.policy.endDate}
+                                                    onChange={(e) => {
+                                                        this.__calendarOnChange("endDate", e)
+                                                    }}>
+                                                </Calendar>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="reminderDate">Poliçe Hatırlatma Tarihi</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Calendar
+                                                    id="reminderDate"
+                                                    value={this.state.policy.reminderDate}
+                                                    onChange={(e) => {
+                                                        this.__calendarOnChange("reminderDate", e)
+                                                    }}
+                                                >
+                                                </Calendar>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="userMessage">Poliçe Hatırlatıcı Mesaj</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputTextarea id="userMessage" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('userMessage', e.target.value)
+                                                }} value={this.state.policy.userMessage}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="policyNumber">Poliçe Numarası</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputText id="policyNumber" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('policyNumber', e.target.value)
+                                                }} value={this.state.policy.policyNumber}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="policyEmount">Poliçe Tutarı</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputText id="policyEmount" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('policyEmount', e.target.value)
+                                                }} value={this.state.policy.policyEmount}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="description">Açıklama</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputTextarea id="description" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('description', e.target.value)
+                                                }} value={this.state.policy.description}/>
                                             </div>
                                         </div>
 
                                     </div>
                                 }
                             </Modal.Body>
-
                             <Modal.Footer>
                                 {dialogPolicyFooter}
                             </Modal.Footer>
-
                         </Modal>
-
-
-                        {/*<Dialog visible={this.state.displayDialogPolicy}*/}
-                        {/*footer={dialogPolicyFooter}*/}
-                        {/*width="550px"*/}
-                        {/*header={this.state.headerDialog}*/}
-                        {/*modal={true}*/}
-                        {/*onHide={() => this.setState({displayDialogPolicy: false})}*/}
-                        {/*>*/}
-                        {/*{*/}
-                        {/*this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">*/}
-
-                        {/*<div className="ui-grid-row">*/}
-                        {/*<div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label*/}
-                        {/*htmlFor="companyList">Sigorta Şirketi</label></div>*/}
-                        {/*<div className="ui-grid-col-8" style={{padding: '4px 10px'}}>*/}
-                        {/*<ReSelectInput*/}
-                        {/*id="companyList"*/}
-                        {/*name="name"*/}
-                        {/*items={this.state.companyList}*/}
-                        {/*textField="name"*/}
-                        {/*valueField="id"*/}
-                        {/*value={this.state.policy.company}*/}
-                        {/*onChange={this.__handleChangeReSelectInputProductList}*/}
-                        {/*/>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-
-                        {/*<div className="ui-grid-row">*/}
-                        {/*<div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label*/}
-                        {/*htmlFor="companyProductList">Şirket Ürünü</label></div>*/}
-                        {/*<div className="ui-grid-col-8" style={{padding: '4px 10px'}}>*/}
-                        {/*<ReSelectInput*/}
-                        {/*id="companyProductList"*/}
-                        {/*name="name"*/}
-                        {/*items={this.state.companyProductList}*/}
-                        {/*textField="name"*/}
-                        {/*valueField="id"*/}
-                        {/*value={this.state.policy.companyProduct}*/}
-                        {/*onChange={this.__handleChangecompanySubProductList}*/}
-                        {/*/>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-
-                        {/*<div className="ui-grid-row">*/}
-                        {/*<div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label*/}
-                        {/*htmlFor="companySubProductList">Şirket Alt Ürünü</label></div>*/}
-                        {/*<div className="ui-grid-col-8" style={{padding: '4px 10px'}}>*/}
-                        {/*<ReSelectInput*/}
-                        {/*id="companySubProductList"*/}
-                        {/*name="name"*/}
-                        {/*items={this.state.companySubProductList}*/}
-                        {/*textField="name"*/}
-                        {/*valueField="id"*/}
-                        {/*value={this.state.policy.companySubProduct}*/}
-                        {/*onChange={this.__handleChangeReSelectInput}*/}
-                        {/*/>*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-
-                        {/*</div>*/}
-                        {/*}*/}
-
-                        {/*</Dialog>*/}
                     </div>
-
                 </div>
+                {this.__renderLoading()}
             </Card>
         );
+    }
+
+    __renderLoading() {
+        if (this.state.loading) {
+            return (
+                <div className="text-center">
+                    <FaIcon
+                        code="fa-spinner fa-spin"
+                        size="fa-5x"/>
+                </div>);
+        }
     }
 
     __updateProperty(property, value) {
         let customer = this.state.customer;
         customer[property] = value;
         this.setState({customer: customer});
+    }
+
+    __updatePropertyPolicy(property, value) {
+        let policy = this.state.policy;
+        policy[property] = value;
+        this.setState({policy: policy});
     }
 
     // Giridin altındaki yeni müşteri ekle Butonu
@@ -521,34 +576,68 @@ export default class Customer extends Component {
                 company: {},
                 companyProduct: {},
                 companySubProduct: {},
-                startDate: null
+                startDate: null,
+                endDate: null,
+                description: "",
+                reminderDate: null,
+                userMessage: this.state.selectedCustomer.name + " " + this.state.selectedCustomer.surname + " isimli müşterinin poliçesi bitmek üzere.",
+                customerMessage: "",
+                policyNumber: "",
+                policyEmount: "",
+                agencyId: this.state.selectedCustomer.id
+
+
             },
             displayDialogPolicy: true,
             headerDialog: "Poliçe Ekle"
         });
     }
 
-    __handleChangeReSelectInput(e) {
-        let state = {};
-        let value = e.target.parsedValue !== undefined ? e.target.parsedValue : e.target.value;
-        state[e.target.name] = value;
-        this.setState(state);
+    __calendarOnChange(property, e) {
+        let value = e.value;
+        let policy = this.state.policy;
+        policy[property] = value;
+        if (property === "endDate") {
+            var days = 7; // Days you want to subtract
+            const DAY_IN_MS = 1000 * 60 * 60 * 24;
+            let reminderDate = new Date(value.getTime() - (days * DAY_IN_MS))
+            policy["reminderDate"] = reminderDate;
+        } else if (property === "startDate") {
+            var days = 365;
+            const DAY_IN_MS = 1000 * 60 * 60 * 24;
+            let endDate = new Date(value.getTime() + (days * DAY_IN_MS))
+            policy["endDate"] = endDate;
+        }
+        this.setState({policy: policy});
     }
 
-    __handleChangeReSelectInputProductList(e) {
-        let state = {};
-        let value = e.target.parsedValue !== undefined ? e.target.parsedValue : e.target.value;
-        this.__getAllCompanyProduct(value);
-        state[e.target.name] = value;
-        this.setState(state);
+    __formatDate(d) {
+        let month = String(d.getMonth() + 1);
+        let day = String(d.getDate());
+        let year = String(d.getFullYear());
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return `${year}-${month}-${day}`;
     }
 
-    __handleChangecompanySubProductList(e) {
-        let state = {};
-        let value = e.target.parsedValue !== undefined ? e.target.parsedValue : e.target.value;
-        state[e.target.name] = value;
-        this.__getAllCompanySubProduct(value);
-        this.setState(state);
+    __handleChangeDropDownCompany(property, e) {
+        let value = e.value;
+        let selected = this.state.companyList.find(o => o.value === value);
+        let policy = this.state.policy;
+        policy[property] = selected;
+        switch (property) {
+            case "company":
+                this.__getAllCompanyProduct(selected);
+                break;
+            case "companyProduct":
+                this.__getAllCompanySubProduct(selected);
+                break;
+            case "companySubProduct":
+                break;
+        }
+        this.setState({policy: policy});
     }
 
     __onSelectionChange(date) {
@@ -577,7 +666,7 @@ export default class Customer extends Component {
 
     }
 
-    __save() {
+    __saveCumstomer() {
         // let customerList = [...this.state.customerList];
         let type = "";
         if (this.newCustomer) {
@@ -592,6 +681,7 @@ export default class Customer extends Component {
         this.request.call(this.state.customer, undefined, function (response) {
             if (response != null) {
                 Toast.success("Kayıt Başarılı");
+                this.setState({selectedCustomer: null, displayDialog: false});
             } else {
                 Toast.error("Kayıt Başarısız")
             }
@@ -599,11 +689,25 @@ export default class Customer extends Component {
             this.forceUpdate();
         }.bind(this));
         // customerList[this.__findSelectedCarIndex()] = this.state.customer;
-        this.setState({selectedCustomer: null, displayDialog: false});
     }
 
     __savePolicy() {
 
+        let policy = this.state.policy;
+
+        this.request = new AjaxRequest({
+            url: "policy",
+            type: "POST"
+        });
+        this.request.call(policy, undefined, function (response) {
+            if (response != null) {
+                Toast.success("Kayıt Başarılı");
+                this.setState({selectedCustomer: null, displayDialogPolicy: false});
+            } else {
+                Toast.error("Kayıt Başarısız")
+            }
+            this.forceUpdate();
+        }.bind(this));
     }
 
     __delete() {
@@ -630,7 +734,7 @@ export default class Customer extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({customerList: response});
+                this.setState({customerList: response, loading: false});
             }
             this.forceUpdate();
         }.bind(this));
@@ -641,10 +745,13 @@ export default class Customer extends Component {
             url: "company",
             type: "GET"
         });
-        request.call(undefined, undefined,
-            (response) => {
-                this.setState({companyList: response});
-            });
+
+        request.call(undefined, undefined, function (response) {
+            if (response != null) {
+                this.setState({companyList: response, loading: false});
+            }
+            this.forceUpdate();
+        }.bind(this));
     }
 
     __getAllCompanyProduct(company) {
