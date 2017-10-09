@@ -15,9 +15,9 @@ import ReSelectInput from "../../components/selectinput/ReSelectInput";
 import {Modal} from "react-bootstrap";
 import CompanySubProduct from "../../parameter/companySubProduct/CompanySubProduct";
 import Calendar from "../../components/calendar/CalendarTR";
-//import {Calendar} from 'primereact/components/calendar/Calendar';
 import {FileUpload} from 'primereact/components/fileupload/FileUpload';
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
+import {InputSwitch} from 'primereact/components/inputswitch/InputSwitch';
 
 export default class Customer extends Component {
 
@@ -33,7 +33,7 @@ export default class Customer extends Component {
             startDate: null,
             loading: true,
         };
-        this.__saveCumstomer = this.__saveCumstomer.bind(this);
+        this.__saveCustomer = this.__saveCustomer.bind(this);
         this.__savePolicy = this.__savePolicy.bind(this);
         this.onFilter = this.onFilter.bind(this);
         this.__newCustomerButton = this.__newCustomerButton.bind(this);
@@ -70,10 +70,36 @@ export default class Customer extends Component {
                         }}>
                 </Button>
                 <Tooltip for="#deleteButton" title="Sil" tooltipPosition="top"/>
-                <Button id="deleteButton" type="button" icon="fa-trash" className="ui-button-danger">
+                <Button id="deleteButton" type="button" icon="fa-trash" className="ui-button-danger"
+                        onClick={(rowData) => {
+                            this.__deleteButton(rowData, column)
+                        }}>
                 </Button>
             </div>
         );
+    }
+
+    // Kayıt'ın aktif pasif durum kolonu
+    __statusRow(column) {
+        if (column.status) {
+            return (
+                <div className="ui-helper-clearfix" style={{width: '100%'}}>
+                    <Tooltip for="#statusTrueButton" title="Aktif" tooltipPosition="top"/>
+                    <Button id="statusTrueButton" type="button" icon="fa-check-square-o"
+                            className="ui-button-success">
+                    </Button>
+                </div>
+            );
+        } else {
+            return (
+                <div className="ui-helper-clearfix" style={{width: '100%'}}>
+                    <Tooltip for="#statusFalseButton" title="Pasif" tooltipPosition="top"/>
+                    <Button id="statusFalseButton" type="button" icon="fa-window-close"
+                            className="ui-button-danger">
+                    </Button>
+                </div>
+            );
+        }
     }
 
     onUpload(event) {
@@ -100,7 +126,7 @@ export default class Customer extends Component {
 
         let dialogFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
-                <Button label="Kaydet" icon="fa-check" onClick={this.__saveCumstomer}
+                <Button label="Kaydet" icon="fa-check" onClick={this.__saveCustomer}
                         className="ui-button-success"/>
                 <Button icon="fa-close" label="İptal"
                         onClick={() => {
@@ -152,9 +178,10 @@ export default class Customer extends Component {
                             <Column field="surname" header="Soyisim" filter={true}/>
                             <Column field="mobilePhone" header="Telefon" filter={true}/>
                             <Column field="email" header="E-Mail" filter={true}/>
+                            <Column field="status" header="Durum" body={this.__statusRow}
+                                    style={{textAlign: 'center', width: '5em'}}/>
                             <Column header="İşlemler" body={this.__actionTemplate}
                                     style={{textAlign: 'center', width: '8em'}}>
-
                             </Column>
                         </DataTable>
                     </div>
@@ -247,6 +274,19 @@ export default class Customer extends Component {
                                                 <InputTextarea id="description" onChange={(e) => {
                                                     this.__updateProperty('description', e.target.value)
                                                 }} value={this.state.customer.description}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="status">Durum</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputSwitch id="status"
+                                                             onLabel="Aktif" offLabel="Pasif"
+                                                             checked={this.state.customer.status}
+                                                             onChange={(e) => {
+                                                                 this.__updateProperty('status', e.value)
+                                                             }}/>
                                             </div>
                                         </div>
 
@@ -666,7 +706,14 @@ export default class Customer extends Component {
 
     }
 
-    __saveCumstomer() {
+    __deleteButton(rowData, column) {
+        let selectedCustomer = column.rowData;
+        selectedCustomer.status = false;
+
+
+    }
+
+    __saveCustomer() {
         // let customerList = [...this.state.customerList];
         let type = "";
         if (this.newCustomer) {

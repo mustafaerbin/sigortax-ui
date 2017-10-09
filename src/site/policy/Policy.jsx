@@ -86,6 +86,17 @@ export default class Policy extends Component {
                         className="ui-button-success"/>
             </div>;
 
+        let dialogPolicyFooter =
+            <div className="ui-dialog-buttonpane ui-helper-clearfix">
+                <Button label="Kaydet" icon="fa-check" onClick={this.__savePolicy}
+                        className="ui-button-success"/>
+                <Button icon="fa-close" label="İptal"
+                        onClick={() => {
+                            this.setState({displayDialogEdit: false});
+                        }}
+                />
+            </div>;
+
         return (
             <Card header="Poliçe Yönetimi">
                 <div>
@@ -110,7 +121,7 @@ export default class Policy extends Component {
                             <Column field="company.label" header="Şirket" filter={true}/>
                             <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
                             <Column field="startDate" header="Başlangıç Tarihi" filter={true}/>
-                            <Column field="reminderDate" header="Bitiş Tarihi" filter={true}/>
+                            <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
                             <Column header="İşlemler" body={this.__actionTemplate}
                                     style={{textAlign: 'center', width: '8em'}}>
 
@@ -118,6 +129,7 @@ export default class Policy extends Component {
                         </DataTable>
                     </div>
 
+                    {/*poliçe detay popup*/}
                     <div className="content-section implementation">
                         <Modal show={this.state.displayDialogDetail}
                                onHide={false}>
@@ -209,6 +221,30 @@ export default class Policy extends Component {
                                             </div>
                                         </div>
 
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="userMessage">Poliçe Hatırlatma Mesajı</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                {this.state.policy.userMessage}
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="policyNumber">Poliçe Numarası</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                {this.state.policy.policyNumber}
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="policyEmount">Poliçe Tutarı</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                {this.state.policy.policyEmount}
+                                            </div>
+                                        </div>
+
                                     </div>
                                 }
                             </Modal.Body>
@@ -219,9 +255,170 @@ export default class Policy extends Component {
 
                         </Modal>
                     </div>
+
+                    {/*güncelle ve kaydet popup*/}
+                    <div className="content-section implementation">
+                        <Modal show={this.state.displayDialogEdit}
+                               onHide={false}>
+                            <Modal.Header>
+                                <Modal.Title>Poliçe Güncelle</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {
+                                    this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="company">Şirket</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Dropdown
+                                                    value={this.state.policy.company.label}
+                                                    options={this.state.companyList}
+                                                    onChange={(e) => {
+                                                        this.__handleChangeDropDownCompany("company", e)
+                                                    }}
+                                                    style={{width: 'ui-grid-col-8'}}
+                                                    placeholder="Şirket Seçiniz"
+                                                    editable={true}
+                                                    filter={true}
+                                                    filterPlaceholder="Şirket Ara"
+                                                    filterBy="label,value"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="companyProduct">Şirket Ürünü</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Dropdown value={this.state.policy.companyProduct.label}
+                                                          options={this.state.companyProductList}
+                                                          onChange={(e) => {
+                                                              this.__handleChangeDropDownCompany("companyProduct", e)
+                                                          }}
+                                                          style={{width: 'ui-grid-col-8'}}
+                                                          placeholder="Ürün Seçiniz"
+                                                          editable={true}
+                                                          filter={true}
+                                                          filterPlaceholder="Ürün Ara"
+                                                          filterBy="label,value"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Dropdown value={this.state.policy.companySubProduct.label}
+                                                          options={this.state.companySubProductList}
+                                                          onChange={(e) => {
+                                                              this.__handleChangeDropDownCompany("companySubProduct", e)
+                                                          }}
+                                                          style={{width: 'ui-grid-col-8'}}
+                                                          placeholder="Alt Ürün Seçiniz"
+                                                          editable={true}
+                                                          filter={true}
+                                                          filterPlaceholder="Alt Ürün Ara"
+                                                          filterBy="label,value"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="reminderDate">Poliçe Hatırlatma Tarihi</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Calendar
+                                                    id="reminderDate"
+                                                    value={this.state.policy.reminderDate}
+                                                    onChange={(e) => {
+                                                        this.__calendarOnChange("reminderDate", e)
+                                                    }}
+                                                >
+                                                </Calendar>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="userMessage">Poliçe Hatırlatıcı Mesaj</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputTextarea id="userMessage" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('userMessage', e.target.value)
+                                                }} value={this.state.policy.userMessage}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="policyNumber">Poliçe Numarası</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputText id="policyNumber" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('policyNumber', e.target.value)
+                                                }} value={this.state.policy.policyNumber}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="policyEmount">Poliçe Tutarı</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputText id="policyEmount" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('policyEmount', e.target.value)
+                                                }} value={this.state.policy.policyEmount}/>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="description">Açıklama</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <InputTextarea id="description" onChange={(e) => {
+                                                    this.__updatePropertyPolicy('description', e.target.value)
+                                                }} value={this.state.policy.description}/>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                }
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                {dialogPolicyFooter}
+                            </Modal.Footer>
+
+                        </Modal>
+                    </div>
+
                 </div>
             </Card>
         );
+    }
+
+    __updatePropertyPolicy(property, value) {
+        let policy = this.state.policy;
+        policy[property] = value;
+        this.setState({policy: policy});
+    }
+
+    __calendarOnChange(property, e) {
+        let value = e.value;
+        let policy = this.state.policy;
+        policy[property] = value;
+        if (property === "endDate") {
+            var days = 7; // Days you want to subtract
+            const DAY_IN_MS = 1000 * 60 * 60 * 24;
+            let reminderDate = new Date(value.getTime() - (days * DAY_IN_MS))
+            policy["reminderDate"] = reminderDate;
+        } else if (property === "startDate") {
+            var days = 365;
+            const DAY_IN_MS = 1000 * 60 * 60 * 24;
+            let endDate = new Date(value.getTime() + (days * DAY_IN_MS))
+            policy["endDate"] = endDate;
+        }
+        this.setState({policy: policy});
     }
 
     __onSelectionChange(date) {
@@ -235,6 +432,71 @@ export default class Policy extends Component {
             policy: selectedPolicy,
             headerDialog: "Poliçe Bilgileri Detay"
         })
+    }
+
+    __editButton(rowData, column) {
+        let selectedPolicy = column.rowData;
+        this.__getAllCompany();
+        this.setState({
+            displayDialogEdit: true,
+            policy: selectedPolicy,
+            headerDialog: "Poliçe Bilgileri Güncelle"
+        });
+    }
+
+    __handleChangeDropDownCompany(property, e) {
+        let value = e.value;
+        let selected = this.state.companyList.find(o => o.value === value);
+        let policy = this.state.policy;
+        policy[property] = selected;
+        switch (property) {
+            case "company":
+                this.__getAllCompanyProduct(selected);
+                break;
+            case "companyProduct":
+                this.__getAllCompanySubProduct(selected);
+                break;
+            case "companySubProduct":
+                break;
+        }
+        this.setState({policy: policy});
+    }
+
+    __getAllCompany() {
+        let request = new AjaxRequest({
+            url: "company",
+            type: "GET"
+        });
+
+        request.call(undefined, undefined, function (response) {
+            if (response != null) {
+                this.setState({companyList: response, loading: false});
+            }
+            this.forceUpdate();
+        }.bind(this));
+    }
+
+    __getAllCompanyProduct(company) {
+        let request = new AjaxRequest({
+            url: "company/list-company-product",
+            type: "POST"
+        });
+        request.call(company, undefined,
+            (response) => {
+                this.setState({companyProductList: response});
+            });
+    }
+
+    __getAllCompanySubProduct(companyProduct) {
+        let request = new AjaxRequest({
+            url: "company/list-company-sub-product",
+            type: "POST"
+        });
+
+        request.call(companyProduct, undefined,
+            (response) => {
+                this.setState({companySubProductList: response});
+            });
     }
 
     __getAllPolicy() {
