@@ -4,19 +4,13 @@ import {Column} from "primereact/components/column/Column";
 import {InputText} from "primereact/components/inputtext/InputText";
 import Card from "../../card/Card";
 import AjaxRequest from "robe-react-commons/lib/connections/AjaxRequest";
-import {Dialog} from "primereact/components/dialog/Dialog";
 import {Button} from 'primereact/components/button/Button';
 import {Tooltip} from 'primereact/components/tooltip/Tooltip';
 import {InputTextarea} from 'primereact/components/inputtextarea/InputTextarea';
 import Toast from "robe-react-ui/lib/toast/Toast";
 import {Dropdown} from 'primereact/components/dropdown/Dropdown';
-import ReSelectInput from "../../components/selectinput/ReSelectInput";
 import {Modal} from "react-bootstrap";
-import CompanySubProduct from "../../parameter/companySubProduct/CompanySubProduct";
 import Calendar from "../../components/calendar/CalendarTR";
-//import {Calendar} from 'primereact/components/calendar/Calendar';
-import {FileUpload} from 'primereact/components/fileupload/FileUpload';
-import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 
 export default class Policy extends Component {
 
@@ -25,14 +19,25 @@ export default class Policy extends Component {
         this.state = {
             filters: {},
             selectedPolicy: {}
-        }
+        };
 
         this.onFilter = this.onFilter.bind(this);
         this.__actionTemplate = this.__actionTemplate.bind(this);
+        this.__savePolicy = this.__savePolicy.bind(this);
+        this.dateStartTemplate = this.dateStartTemplate.bind(this);
+        this.dateEndTemplate = this.dateEndTemplate.bind(this);
     }
 
     onFilter(e) {
         this.setState({filters: e.filters});
+    }
+
+    dateStartTemplate(rowData, column) {
+        return this.__formatDate(new Date(rowData.startDate));
+    }
+
+    dateEndTemplate(rowData, column) {
+        return this.__formatDate(new Date(rowData.endDate));
     }
 
     // Girdin sonunda ki işlemler colonu
@@ -50,9 +55,6 @@ export default class Policy extends Component {
                         onClick={(rowData) => {
                             this.__editButton(rowData, column)
                         }}>
-                </Button>
-                <Tooltip for="#deleteButton" title="Sil" tooltipPosition="top"/>
-                <Button id="deleteButton" type="button" icon="fa-trash" className="ui-button-danger">
                 </Button>
             </div>
         );
@@ -76,16 +78,6 @@ export default class Policy extends Component {
                 />
             </div>
 
-        let tableFooter =
-            <div className="ui-helper-clearfix" style={{width: '100%'}}>
-                <Button id="__newCustomerButton" style={{float: 'left'}} icon="fa-plus" label="Yeni Müşteri"
-                        onClick={this.__newCustomerButton}
-                        className="ui-button-success"/>
-                <Button style={{float: 'left'}} icon="fa-plus" label="Poliçe Ekle" onClick={this.__addPolicyButton}
-                        disabled={this.state.policyAddButtonDisable}
-                        className="ui-button-success"/>
-            </div>;
-
         let dialogPolicyFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
                 <Button label="Kaydet" icon="fa-check" onClick={this.__savePolicy}
@@ -106,7 +98,6 @@ export default class Policy extends Component {
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
                                    selectionMode="single"
-                                   footer={tableFooter}
                                    selection={this.state.selectedPolicy}
                             // onSelectionChange={(e) => {
                             //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
@@ -120,10 +111,12 @@ export default class Policy extends Component {
                             <Column field="customer.surname" header="Soyisim" filter={true}/>
                             <Column field="company.label" header="Şirket" filter={true}/>
                             <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
-                            <Column field="startDate" header="Başlangıç Tarihi" filter={true}/>
-                            <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
+                            <Column field="startDate" header="Başlangıç Tarihi" filter={true}
+                                    body={this.dateStartTemplate}/>
+                            <Column field="endDate" header="Bitiş Tarihi" filter={true}
+                                    body={this.dateEndTemplate}/>
                             <Column header="İşlemler" body={this.__actionTemplate}
-                                    style={{textAlign: 'center', width: '8em'}}>
+                                    style={{textAlign: 'center', width: '7em'}}>
 
                             </Column>
                         </DataTable>
@@ -201,7 +194,7 @@ export default class Policy extends Component {
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="startDate">Poliçe Başlangıç tarihi</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.startDate}
+                                                {this.__formatDate(new Date(this.state.policy.startDate))}
                                             </div>
                                         </div>
 
@@ -209,7 +202,7 @@ export default class Policy extends Component {
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.endDate}
+                                                {this.__formatDate(new Date(this.state.policy.endDate))}
                                             </div>
                                         </div>
 
@@ -217,7 +210,7 @@ export default class Policy extends Component {
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="endDate">Poliçe Hatırlatma Tarihi</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.reminderDate}
+                                                {this.__formatDate(new Date(this.state.policy.reminderDate))}
                                             </div>
                                         </div>
 
@@ -327,13 +320,43 @@ export default class Policy extends Component {
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="startDate">Poliçe Başlangıç Tarihi</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Calendar
+                                                    id="startDate"
+                                                    value={this.state.startDate}
+                                                    onChange={(e) => {
+                                                        this.__calendarOnChangeDate("startDate", e)
+                                                    }}
+                                                >
+                                                </Calendar>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                <Calendar
+                                                    id="endDate"
+                                                    value={this.state.endDate}
+                                                    onChange={(e) => {
+                                                        this.__calendarOnChangeDate("endDate", e)
+                                                    }}
+                                                >
+                                                </Calendar>
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="reminderDate">Poliçe Hatırlatma Tarihi</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                                 <Calendar
                                                     id="reminderDate"
-                                                    value={this.state.policy.reminderDate}
+                                                    value={this.state.reminderDate}
                                                     onChange={(e) => {
-                                                        this.__calendarOnChange("reminderDate", e)
+                                                        this.__calendarOnChangeDate("reminderDate", e)
                                                     }}
                                                 >
                                                 </Calendar>
@@ -397,6 +420,42 @@ export default class Policy extends Component {
         );
     }
 
+    __formatDate(d) {
+        let month = String(d.getMonth() + 1);
+        let day = String(d.getDate());
+        const year = String(d.getFullYear());
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+        return `${year}-${month}-${day}`;
+    }
+
+    __savePolicy() {
+
+        let policy = this.state.policy;
+        policy["startDate"] = this.state.startDate;
+        policy["endDate"] = this.state.endDate;
+        policy["reminderDate"] = this.state.reminderDate;
+
+        this.request = new AjaxRequest({
+            url: "policy",
+            type: "PUT"
+        });
+        this.request.call(policy, undefined, function (response) {
+            if (response != null) {
+                Toast.success("Kayıt Başarılı");
+                this.__getAllPolicy();
+                this.setState({
+                    policy: null,
+                    displayDialogEdit: false
+                });
+            } else {
+                Toast.error("Kayıt Başarısız")
+            }
+            this.forceUpdate();
+        }.bind(this));
+    }
+
     __updatePropertyPolicy(property, value) {
         let policy = this.state.policy;
         policy[property] = value;
@@ -407,18 +466,17 @@ export default class Policy extends Component {
         let value = e.value;
         let policy = this.state.policy;
         policy[property] = value;
-        if (property === "endDate") {
-            var days = 7; // Days you want to subtract
-            const DAY_IN_MS = 1000 * 60 * 60 * 24;
-            let reminderDate = new Date(value.getTime() - (days * DAY_IN_MS))
-            policy["reminderDate"] = reminderDate;
-        } else if (property === "startDate") {
-            var days = 365;
-            const DAY_IN_MS = 1000 * 60 * 60 * 24;
-            let endDate = new Date(value.getTime() + (days * DAY_IN_MS))
-            policy["endDate"] = endDate;
-        }
         this.setState({policy: policy});
+    }
+
+    __calendarOnChangeDate(property, e) {
+        let value = e.value;
+        if (property === "startDate")
+            this.setState({startDate: value});
+        else if (property === "endDate")
+            this.setState({endDate: value});
+        else if (property === "reminderDate")
+            this.setState({reminderDate: value});
     }
 
     __onSelectionChange(date) {
@@ -435,12 +493,18 @@ export default class Policy extends Component {
     }
 
     __editButton(rowData, column) {
-        let selectedPolicy = column.rowData;
+        let policy = column.rowData;
         this.__getAllCompany();
+        let startDate = new Date(policy.startDate);
+        let endDate = new Date(policy.endDate);
+        let reminderDate = new Date(policy.reminderDate);
         this.setState({
             displayDialogEdit: true,
-            policy: selectedPolicy,
-            headerDialog: "Poliçe Bilgileri Güncelle"
+            policy: policy,
+            headerDialog: "Poliçe Bilgileri Güncelle",
+            startDate: startDate,
+            endDate: endDate,
+            reminderDate: reminderDate
         });
     }
 

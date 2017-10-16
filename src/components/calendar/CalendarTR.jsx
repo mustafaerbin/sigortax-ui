@@ -31,6 +31,7 @@ export default class CalendarTR extends Component {
                     monthNavigator="true"
                     yearNavigator="true"
                     yearRange="2015:2025"
+                    showIcon="true"
                 >
                 </Calendar>
             </div>

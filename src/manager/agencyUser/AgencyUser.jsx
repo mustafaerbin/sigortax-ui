@@ -1,42 +1,51 @@
-import React from "react";
+import React, {Component} from "react";
 import Card from "../../card/Card";
+import AgencyUserModel from "./AgencyUserModel.json";
 import ModalDataForm from "robe-react-ui/lib/form/ModalDataForm";
 import DataGrid from "robe-react-ui/lib/datagrid/DataGrid";
 import AjaxRequest from "robe-react-commons/lib/connections/AjaxRequest";
 import Assertions from "robe-react-commons/lib/utils/Assertions";
 import RemoteEndPoint from "robe-react-commons/lib/endpoint/RemoteEndPoint";
-import ShallowComponent from "robe-react-commons/lib/components/ShallowComponent";
 import Store from "robe-react-commons/lib/stores/Store";
 import SHA256 from "crypto-js/sha256";
-import UserModel from "./UserModel.json";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
+import ShallowComponent from "robe-react-commons/lib/components/ShallowComponent";
 
-export default class User extends ShallowComponent {
+export default class AgencyUser extends ShallowComponent {
 
     static idField = "id";
     roleRequest = new AjaxRequest({
-        url:"roles",
-        type:"GET"
+        url: "roles",
+        type: "GET"
     });
+
+    agencyRequest = new AjaxRequest({
+        url: "agency",
+        type: "GET"
+    });
+
     constructor(props) {
         super(props);
 
         let store = new Store({
             endPoint: new RemoteEndPoint({
-                url: "users"
+                url: "agency-user"
             }),
-            idField: User.idField,
+            idField: AgencyUser.idField,
             autoLoad: true
         });
 
         this.state = {
-            fields: UserModel.fields,
+            fields: AgencyUserModel.fields,
             store: store,
             showModal: false,
             item: {},
-            items:[],
+            items: [],
             propsOfFields: {
                 roleOid: {
+                    items: []
+                },
+                agencyOid: {
                     items: []
                 }
             }
@@ -91,7 +100,8 @@ export default class User extends ShallowComponent {
         if (!selectedRows || !selectedRows[0]) {
             return;
         }
-        selectedRows[0].roleOid=this.__findRoleObject(selectedRows[0].role.id).id;
+        selectedRows[0].roleOid = this.__findRoleObject(selectedRows[0].role.id).id;
+        selectedRows[0].agencyOid = this.__findAgencyObject(selectedRows[0].agency.id).id;
         this.__showModal(selectedRows[0]);
     }
 
@@ -100,8 +110,9 @@ export default class User extends ShallowComponent {
     }
 
     __onSave(newData, callback) {
-        let id = newData[User.idField];
+        let id = newData[AgencyUser.idField];
         newData.role = this.__findRoleObject(newData.roleOid);
+        newData.agency = this.__findRoleObject(newData.agencyOid);
         newData.password = SHA256(newData.password).toString();
         if (Assertions.isNotEmpty(id)) {
             this.state.store.update(newData);
@@ -125,10 +136,10 @@ export default class User extends ShallowComponent {
     __showModal(newItem: Object) {
         let selectedRows = this.refs.table.getSelectedRows();
 
-            /*[{
-        value : this.state.propsOfFields.roleOid.items[0].value,
-        text : this.state.propsOfFields.roleOid.items[0].text
-        }];*/
+        /*[{
+    value : this.state.propsOfFields.roleOid.items[0].value,
+    text : this.state.propsOfFields.roleOid.items[0].text
+    }];*/
         this.setState({showModal: true, item: newItem});
     }
 
@@ -149,40 +160,73 @@ export default class User extends ShallowComponent {
             this.setState(state);
             this.forceUpdate();
         });
+
+        this.agencyRequest.call(undefined, undefined, (response) => {
+
+            let state = {};
+            state.items = response;
+            state.propsOfFields = this.state.propsOfFields;
+            for (let i = 0; i < response.length; i++) {
+                let res = response[i];
+                state.propsOfFields.agencyOid.items.push({
+                    value: res.id,
+                    text: res.name
+                });
+            }
+            this.setState(state);
+            this.forceUpdate();
+        });
+
+
     }
+
     __cellRenderer(idx: number, fields: Array, row: Object) {
         let password = "******";
-        if(fields[idx].name =='username') {
+        if (fields[idx].name == 'username') {
             return <td key={fields[idx].name}>{row.username}</td>;
         }
         if (fields[idx].name == 'roleOid') {
             return <td key={fields[idx].name}>{row.role.name}</td>;
         }
-        if(fields[idx].name =='name') {
+        if (fields[idx].name == 'agencyOid') {
+            return <td key={fields[idx].name}>{row.agency.name}</td>;
+        }
+        if (fields[idx].name == 'name') {
             return <td key={fields[idx].name}>{row.name}</td>;
         }
         if (fields[idx].name == 'surname') {
             return <td key={fields[idx].name}>{row.surname}</td>;
         }
-        if(fields[idx].name == 'password') {
+        if (fields[idx].name == 'password') {
             return <td key={fields[idx].name}>{password}</td>;
         }
-        if(fields[idx].name == 'active') {
-            if(row.active == true)
-                return <td key={fields[idx].name}><FaIcon code={"fa-check-square-o "} /></td>;
+        if (fields[idx].name == 'active') {
+            if (row.active == true)
+                return <td key={fields[idx].name}><FaIcon code={"fa-check-square-o "}/></td>;
             else
-                return <td key={fields[idx].name}><FaIcon code={"fa-square-o "} /></td>;
+                return <td key={fields[idx].name}><FaIcon code={"fa-square-o "}/></td>;
         }
 
     }
 
-    __findRoleObject(selectedOid: String){
+    __findRoleObject(selectedOid: String) {
 
-        for(let i = 0; i < this.state.items.length; i++){
+        for (let i = 0; i < this.state.items.length; i++) {
             let roleObject = this.state.items[i];
-            if(roleObject && roleObject.id == selectedOid)
+            if (roleObject && roleObject.id == selectedOid)
                 return roleObject;
         }
         return undefined;
     }
+
+    __findAgencyObject(selectedOid: String) {
+
+        for (let i = 0; i < this.state.items.length; i++) {
+            let agencyObject = this.state.items[i];
+            if (agencyObject && agencyObject.id == selectedOid)
+                return agencyObject;
+        }
+        return undefined;
+    }
+
 }

@@ -69,37 +69,42 @@ export default class Customer extends Component {
                             this.__editButton(rowData, column)
                         }}>
                 </Button>
-                <Tooltip for="#deleteButton" title="Sil" tooltipPosition="top"/>
-                <Button id="deleteButton" type="button" icon="fa-trash" className="ui-button-danger"
-                        onClick={(rowData) => {
-                            this.__deleteButton(rowData, column)
-                        }}>
-                </Button>
+                {/*<Tooltip for="#deleteButton" title="Sil" tooltipPosition="top"/>*/}
+                {/*<Button id="deleteButton" type="button" icon="fa-trash" className="ui-button-danger"*/}
+                {/*onClick={(rowData) => {*/}
+                {/*this.__deleteButton(rowData, column)*/}
+                {/*}}>*/}
+                {/*</Button>*/}
             </div>
         );
     }
 
     // Kayıt'ın aktif pasif durum kolonu
     __statusRow(column) {
-        if (column.status) {
-            return (
-                <div className="ui-helper-clearfix" style={{width: '100%'}}>
-                    <Tooltip for="#statusTrueButton" title="Aktif" tooltipPosition="top"/>
-                    <Button id="statusTrueButton" type="button" icon="fa-check-square-o"
-                            className="ui-button-success">
-                    </Button>
-                </div>
-            );
-        } else {
-            return (
-                <div className="ui-helper-clearfix" style={{width: '100%'}}>
-                    <Tooltip for="#statusFalseButton" title="Pasif" tooltipPosition="top"/>
-                    <Button id="statusFalseButton" type="button" icon="fa-window-close"
-                            className="ui-button-danger">
-                    </Button>
-                </div>
-            );
-        }
+        if (column.status)
+            return <td><FaIcon code={"fa-check-square-o "}/></td>;
+        else
+            return <td><FaIcon code={"fa-square-o "}/></td>;
+
+        // if (column.status) {
+        //     return (
+        //         <div className="ui-helper-clearfix" style={{width: '100%'}}>
+        //             <Tooltip for="#statusTrueButton" title="Aktif" tooltipPosition="top"/>
+        //             <Button id="statusTrueButton" type="button" icon="fa-check-square-o"
+        //                     className="ui-button-success">
+        //             </Button>
+        //         </div>
+        //     );
+        // } else {
+        //     return (
+        //         <div className="ui-helper-clearfix" style={{width: '100%'}}>
+        //             <Tooltip for="#statusFalseButton" title="Pasif" tooltipPosition="top"/>
+        //             <Button id="statusFalseButton" type="button" icon="fa-window-close"
+        //                     className="ui-button-danger">
+        //             </Button>
+        //         </div>
+        //     );
+        // }
     }
 
     onUpload(event) {
@@ -181,7 +186,7 @@ export default class Customer extends Component {
                             <Column field="status" header="Durum" body={this.__statusRow}
                                     style={{textAlign: 'center', width: '5em'}}/>
                             <Column header="İşlemler" body={this.__actionTemplate}
-                                    style={{textAlign: 'center', width: '8em'}}>
+                                    style={{textAlign: 'center', width: '7em'}}>
                             </Column>
                         </DataTable>
                     </div>
@@ -647,6 +652,8 @@ export default class Customer extends Component {
             const DAY_IN_MS = 1000 * 60 * 60 * 24;
             let endDate = new Date(value.getTime() + (days * DAY_IN_MS))
             policy["endDate"] = endDate;
+        } else if (property === "reminderDate") {
+            policy["reminderDate"] = value;
         }
         this.setState({policy: policy});
     }

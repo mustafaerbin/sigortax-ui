@@ -1,0 +1,58 @@
+{
+  "name": "AgencyModel",
+  "fields": [
+    {
+      "label": "Id",
+      "type": "string",
+      "name": "id",
+      "tooltip": "Id",
+      "visible": false
+    },
+    {
+      "label": "Isim",
+      "type": "string",
+      "name": "name",
+      "tooltip": "Isim",
+      "validations": {
+        "required": {
+          "message": "Bu alan zorunludur"
+        }
+      }
+    },
+    {
+      "label": "Adres",
+      "type": "string",
+      "name": "address",
+      "tooltip": "Adres"
+    },
+    {
+      "label": "Aktif",
+      "type": "check",
+      "valueField": "status",
+      "textField": "text",
+      "item": [
+        {
+          "value": true,
+          "text": "Bu kullanıcı aktif"
+        }
+      ],
+      "name": "status",
+      "tooltip": "Aktif",
+      "sort": "",
+      "filter": true
+    },
+    {
+      "label": "Açıklama",
+      "type": "string",
+      "name": "description",
+      "tooltip": "Açıklama"
+    },
+    {
+      "label": "version",
+      "type": "number",
+      "name": "version",
+      "tooltip": "version",
+      "visible": false
+    }
+  ]
+}
