@@ -1,0 +1,46 @@
+{
+  "name": "CompanyModel",
+  "fields": [
+    {
+      "label": "Id",
+      "type": "string",
+      "name": "id",
+      "tooltip": "Id",
+      "visible": false
+    },
+    {
+      "label": "Isim",
+      "type": "string",
+      "name": "label",
+      "tooltip": "Isim",
+      "validations": {
+        "required": {
+          "message": "Bu alan zorunludur"
+        }
+      }
+    },
+    {
+      "label": "Aktif",
+      "type": "check",
+      "valueField": "status",
+      "textField": "text",
+      "item": [
+        {
+          "value": true,
+          "text": "Bu kullanıcı aktif"
+        }
+      ],
+      "name": "status",
+      "tooltip": "Aktif",
+      "sort": "",
+      "filter": true
+    },
+    {
+      "label": "version",
+      "type": "number",
+      "name": "version",
+      "tooltip": "version",
+      "visible": false
+    }
+  ]
+}

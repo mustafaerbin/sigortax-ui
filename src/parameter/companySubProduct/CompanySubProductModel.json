@@ -1,0 +1,74 @@
+{
+  "name": "CompanySubProductModel",
+  "fields": [
+    {
+      "label": "Id",
+      "type": "string",
+      "name": "id",
+      "tooltip": "Id",
+      "visible": false
+    },
+    {
+      "label": "Şirket",
+      "type": "select",
+      "name": "companyOid",
+      "tooltip": "Şirket",
+      "placeHolder": "<Lütfen Seçiniz>",
+      "validations": {
+        "required": {
+          "message": "Bu alan zorunludur"
+        }
+      },
+      "sort": "",
+      "filter": false
+    },
+    {
+      "label": "Şirket Ürünü",
+      "type": "select",
+      "name": "companyProductOid",
+      "tooltip": "Şirket Ürünü",
+      "placeHolder": "<Lütfen Seçiniz>",
+      "validations": {
+        "required": {
+          "message": "Bu alan zorunludur"
+        }
+      },
+      "sort": "",
+      "filter": false
+    },
+    {
+      "label": "Şirket Alt Ürünü",
+      "type": "string",
+      "name": "label",
+      "tooltip": "Şirket Alt Ürünü",
+      "validations": {
+        "required": {
+          "message": "Bu alan zorunludur"
+        }
+      }
+    },
+    {
+      "label": "Aktif",
+      "type": "check",
+      "valueField": "status",
+      "textField": "text",
+      "item": [
+        {
+          "value": true,
+          "text": "Bu kullanıcı aktif"
+        }
+      ],
+      "name": "status",
+      "tooltip": "Aktif",
+      "sort": "",
+      "filter": true
+    },
+    {
+      "label": "version",
+      "type": "number",
+      "name": "version",
+      "tooltip": "version",
+      "visible": false
+    }
+  ]
+}

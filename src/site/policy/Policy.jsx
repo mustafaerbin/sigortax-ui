@@ -107,14 +107,14 @@ export default class Policy extends Component {
                                    }}
                                    onFilter={this.onFilter}
                         >
-                            <Column field="customer.name" header="İsim" filter={true}/>
-                            <Column field="customer.surname" header="Soyisim" filter={true}/>
+                            <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
                             <Column field="company.label" header="Şirket" filter={true}/>
                             <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
                             <Column field="startDate" header="Başlangıç Tarihi" filter={true}
                                     body={this.dateStartTemplate}/>
                             <Column field="endDate" header="Bitiş Tarihi" filter={true}
                                     body={this.dateEndTemplate}/>
+                            <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
                             <Column header="İşlemler" body={this.__actionTemplate}
                                     style={{textAlign: 'center', width: '7em'}}>
 

@@ -176,8 +176,6 @@ export default class AgencyUser extends ShallowComponent {
             this.setState(state);
             this.forceUpdate();
         });
-
-
     }
 
     __cellRenderer(idx: number, fields: Array, row: Object) {
