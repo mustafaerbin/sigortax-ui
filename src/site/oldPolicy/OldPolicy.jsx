@@ -5,12 +5,14 @@ import {Column} from "primereact/components/column/Column";
 import {InputText} from "primereact/components/inputtext/InputText";
 import AjaxRequest from "robe-react-commons/lib/connections/AjaxRequest";
 import {Modal} from "react-bootstrap";
+import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 
 export default class OldPolicy extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            loading: true,
             filters: {}
         };
         this.onFilter = this.onFilter.bind(this);
@@ -32,7 +34,7 @@ export default class OldPolicy extends Component {
             </div>;
 
         return (
-            <Card header="Eski Poliçeler">
+            <Card header="Geçmiş Poliçeler">
                 <div>
                     <div className="content-section implementation">
                         <DataTable value={this.state.policyList}
@@ -57,8 +59,20 @@ export default class OldPolicy extends Component {
                         </DataTable>
                     </div>
                 </div>
+                {this.__renderLoading()}
             </Card>
         );
+    }
+
+    __renderLoading() {
+        if (this.state.loading) {
+            return (
+                <div className="text-center">
+                    <FaIcon
+                        code="fa-spinner fa-spin"
+                        size="fa-5x"/>
+                </div>);
+        }
     }
 
     __getAllPolicy() {
@@ -70,7 +84,7 @@ export default class OldPolicy extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({policyList: response});
+                this.setState({policyList: response, loading: false});
             }
             this.forceUpdate();
         }.bind(this));

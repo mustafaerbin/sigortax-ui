@@ -196,7 +196,9 @@ export default class Customer extends Component {
                         {
                             this.state.customer &&
                             <Modal show={this.state.displayDialog}
-                                   onHide={false}>
+                                   onHide={() => {
+                                       this.setState({displayDialog: false})
+                                   }}>
                                 <Modal.Header>
                                     <Modal.Title>{this.state.headerDialog}</Modal.Title>
                                 </Modal.Header>
@@ -309,7 +311,9 @@ export default class Customer extends Component {
                     {/*detay popup*/}
                     <div className="content-section implementation">
                         <Modal show={this.state.displayDialogDetail}
-                               onHide={false}>
+                               onHide={() => {
+                                   this.setState({displayDialogDetail: false})
+                               }}>
                             <Modal.Header>
                                 <Modal.Title>{this.state.headerDialog}</Modal.Title>
                             </Modal.Header>
@@ -395,7 +399,9 @@ export default class Customer extends Component {
                     {/*poliçe ekle popup*/}
                     <div className="content-section implementation">
                         <Modal show={this.state.displayDialogPolicy}
-                               onHide={false}>
+                               onHide={() => {
+                                   this.setState({displayDialogPolicy: false})
+                               }}>
                             <Modal.Header>
                                 <Modal.Title>Poliçe Ekle</Modal.Title>
                             </Modal.Header>
@@ -714,7 +720,7 @@ export default class Customer extends Component {
     }
 
     __deleteButton(rowData, column) {
-        let selectedCustomer = column.rowData;
+        let selectedCustomer = column.rowData
         selectedCustomer.status = false;
 
 

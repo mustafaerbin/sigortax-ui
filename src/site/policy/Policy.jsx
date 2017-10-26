@@ -11,6 +11,7 @@ import Toast from "robe-react-ui/lib/toast/Toast";
 import {Dropdown} from 'primereact/components/dropdown/Dropdown';
 import {Modal} from "react-bootstrap";
 import Calendar from "../../components/calendar/CalendarTR";
+import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 
 export default class Policy extends Component {
 
@@ -18,7 +19,8 @@ export default class Policy extends Component {
         super(props);
         this.state = {
             filters: {},
-            selectedPolicy: {}
+            selectedPolicy: {},
+            loading: true
         };
 
         this.onFilter = this.onFilter.bind(this);
@@ -125,7 +127,9 @@ export default class Policy extends Component {
                     {/*poliçe detay popup*/}
                     <div className="content-section implementation">
                         <Modal show={this.state.displayDialogDetail}
-                               onHide={false}>
+                               onHide={() => {
+                                   this.setState({displayDialogDetail: false})
+                               }}>
                             <Modal.Header>
                                 <Modal.Title>{this.state.headerDialog}</Modal.Title>
                             </Modal.Header>
@@ -238,6 +242,14 @@ export default class Policy extends Component {
                                             </div>
                                         </div>
 
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="description">Açıklama</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                {this.state.policy.description}
+                                            </div>
+                                        </div>
+
                                     </div>
                                 }
                             </Modal.Body>
@@ -252,7 +264,9 @@ export default class Policy extends Component {
                     {/*güncelle ve kaydet popup*/}
                     <div className="content-section implementation">
                         <Modal show={this.state.displayDialogEdit}
-                               onHide={false}>
+                               onHide={() => {
+                                   this.setState({displayDialogEdit: false})
+                               }}>
                             <Modal.Header>
                                 <Modal.Title>Poliçe Güncelle</Modal.Title>
                             </Modal.Header>
@@ -416,8 +430,20 @@ export default class Policy extends Component {
                     </div>
 
                 </div>
+                {this.__renderLoading()}
             </Card>
         );
+    }
+
+    __renderLoading() {
+        if (this.state.loading) {
+            return (
+                <div className="text-center">
+                    <FaIcon
+                        code="fa-spinner fa-spin"
+                        size="fa-5x"/>
+                </div>);
+        }
     }
 
     __formatDate(d) {
@@ -547,7 +573,7 @@ export default class Policy extends Component {
         });
         request.call(company, undefined,
             (response) => {
-                this.setState({companyProductList: response});
+                this.setState({companyProductList: response, loading: false});
             });
     }
 
@@ -559,7 +585,7 @@ export default class Policy extends Component {
 
         request.call(companyProduct, undefined,
             (response) => {
-                this.setState({companySubProductList: response});
+                this.setState({companySubProductList: response, loading: false});
             });
     }
 

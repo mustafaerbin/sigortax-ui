@@ -38,14 +38,17 @@
     },
     {
       "label": "Şirket Alt Ürünü",
-      "type": "string",
-      "name": "label",
+      "type": "select",
+      "name": "companySubProductOid",
       "tooltip": "Şirket Alt Ürünü",
+      "placeHolder": "<Lütfen Seçiniz>",
       "validations": {
         "required": {
           "message": "Bu alan zorunludur"
         }
-      }
+      },
+      "sort": "",
+      "filter": false
     },
     {
       "label": "Aktif",
