@@ -8,6 +8,7 @@ import Toast from "robe-react-ui/lib/toast/Toast";
 import SHA256 from "crypto-js/sha256";
 import cookie from "react-cookie";
 import Card from "../card/Card";
+import {Modal} from "react-bootstrap";
 
 class Login extends ShallowComponent {
 
@@ -21,6 +22,7 @@ class Login extends ShallowComponent {
         this.state = {
             username: "",
             password: "",
+            checkUser: false,
             rememberme: false
         };
     }
@@ -72,12 +74,27 @@ class Login extends ShallowComponent {
                         <br/>
                         <br/>
                         {/*<Col>*/}
-                            {/*<Alert bsStyle="info">*/}
-                                {/*<p>Username :<b> admin</b></p>*/}
-                                {/*<p>Password :<b> 123123</b></p>*/}
-                            {/*</Alert>*/}
+                        {/*<Alert bsStyle="info">*/}
+                        {/*<p>Username :<b> admin</b></p>*/}
+                        {/*<p>Password :<b> 123123</b></p>*/}
+                        {/*</Alert>*/}
                         {/*</Col>*/}
                     </Form>
+
+                    <div className="content-section implementation">
+                        <Modal show={this.state.checkUser}>
+                            <Modal.Header>
+                                <Modal.Title>UYARI</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <div>
+                                    Kullanım Süreniz Bitmiştir, Lütfen Sistem Yöneticisi ile iletişime geçiniz.
+                                </div>
+                            </Modal.Body>
+                            <Modal.Footer>
+                            </Modal.Footer>
+                        </Modal>
+                    </div>
                 </Card>
             </div>
         );
@@ -110,8 +127,24 @@ class Login extends ShallowComponent {
 
     __loginSuccess(response) {
 
-        cookie.save('username', response.username);
-        location.reload();
+        let request = new AjaxRequest({
+            url: "agency-user/check/" + response.id,
+            type: "GET"
+        });
+
+        let userCheck = true;
+        request.call(undefined, undefined, function (response) {
+            if (response != null) {
+                userCheck = response;
+            }
+            if (userCheck) {
+                cookie.save('username', response.username);
+                location.reload();
+            } else {
+                this.setState({checkUser: true})
+            }
+        }.bind(this));
+
     }
 
     __loginError(response, textStatus, xhr) {

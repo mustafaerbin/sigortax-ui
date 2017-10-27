@@ -204,6 +204,9 @@ export default class AgencyUser extends ShallowComponent {
             else
                 return <td key={fields[idx].name}><FaIcon code={"fa-square-o "}/></td>;
         }
+        if (fields[idx].name == 'endDate') {
+            return <td key={fields[idx].endDate}>{row.endDate}</td>;
+        }
 
     }
 

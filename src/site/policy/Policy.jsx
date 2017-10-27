@@ -109,6 +109,8 @@ export default class Policy extends Component {
                                    }}
                                    onFilter={this.onFilter}
                         >
+                            <Column field="id" header="Sis No" filter={true}
+                                    style={{textAlign: 'center', width: '7em'}}/>
                             <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
                             <Column field="company.label" header="Şirket" filter={true}/>
                             <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
@@ -118,7 +120,7 @@ export default class Policy extends Component {
                                     body={this.dateEndTemplate}/>
                             <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
                             <Column header="İşlemler" body={this.__actionTemplate}
-                                    style={{textAlign: 'center', width: '7em'}}>
+                                    style={{textAlign: 'center', width: '6em'}}>
 
                             </Column>
                         </DataTable>

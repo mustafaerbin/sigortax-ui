@@ -128,6 +128,13 @@
       "filter": true
     },
     {
+      "label": "Bitiş Tarihi",
+      "type": "date",
+      "name": "endDate",
+      "tooltip": "Bitiş Tarihi",
+      "visible": true
+    },
+    {
       "label": "Fail Count",
       "type": "number",
       "name": "failCount",
