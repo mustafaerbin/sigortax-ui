@@ -18,6 +18,7 @@ import Calendar from "../../components/calendar/CalendarTR";
 import {FileUpload} from 'primereact/components/fileupload/FileUpload';
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import {InputSwitch} from 'primereact/components/inputswitch/InputSwitch';
+import {InputMask} from 'primereact/components/inputmask/InputMask';
 
 export default class Customer extends Component {
 
@@ -33,6 +34,7 @@ export default class Customer extends Component {
             startDate: null,
             loading: true,
         };
+
         this.__saveCustomer = this.__saveCustomer.bind(this);
         this.__savePolicy = this.__savePolicy.bind(this);
         this.onFilter = this.onFilter.bind(this);
@@ -85,26 +87,6 @@ export default class Customer extends Component {
             return <td><FaIcon code={"fa-check-square-o "}/></td>;
         else
             return <td><FaIcon code={"fa-square-o "}/></td>;
-
-        // if (column.status) {
-        //     return (
-        //         <div className="ui-helper-clearfix" style={{width: '100%'}}>
-        //             <Tooltip for="#statusTrueButton" title="Aktif" tooltipPosition="top"/>
-        //             <Button id="statusTrueButton" type="button" icon="fa-check-square-o"
-        //                     className="ui-button-success">
-        //             </Button>
-        //         </div>
-        //     );
-        // } else {
-        //     return (
-        //         <div className="ui-helper-clearfix" style={{width: '100%'}}>
-        //             <Tooltip for="#statusFalseButton" title="Pasif" tooltipPosition="top"/>
-        //             <Button id="statusFalseButton" type="button" icon="fa-window-close"
-        //                     className="ui-button-danger">
-        //             </Button>
-        //         </div>
-        //     );
-        // }
     }
 
     onUpload(event) {
@@ -228,9 +210,16 @@ export default class Customer extends Component {
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="mobilePhone">Mobil Tel</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <InputText id="mobilePhone" onChange={(e) => {
-                                                    this.__updateProperty('mobilePhone', e.target.value)
-                                                }} value={this.state.customer.mobilePhone}/>
+                                                {/*<InputText id="mobilePhone" onChange={(e) => {*/}
+                                                {/*this.__updateProperty('mobilePhone', e.target.value)*/}
+                                                {/*}} value={this.state.customer.mobilePhone}/>*/}
+                                                <InputMask id="mobilePhone"
+                                                           mask="0(999) 999-9999"
+                                                           placeholder="(999) 999-9999"
+                                                           onChange={(e) => {
+                                                               this.__updateProperty('mobilePhone', e.value)
+                                                           }} value={this.state.customer.mobilePhone}>
+                                                </InputMask>
                                             </div>
                                         </div>
 
@@ -649,15 +638,17 @@ export default class Customer extends Component {
         let policy = this.state.policy;
         policy[property] = value;
         if (property === "endDate") {
-            var days = 7; // Days you want to subtract
+            const days = 7; // Days you want to subtract
             const DAY_IN_MS = 1000 * 60 * 60 * 24;
-            let reminderDate = new Date(value.getTime() - (days * DAY_IN_MS))
+            const reminderDate = new Date(value.getTime() - (days * DAY_IN_MS));
             policy["reminderDate"] = reminderDate;
         } else if (property === "startDate") {
-            var days = 365;
+            const days = 365;
             const DAY_IN_MS = 1000 * 60 * 60 * 24;
-            let endDate = new Date(value.getTime() + (days * DAY_IN_MS))
+            const endDate = new Date(value.getTime() + (days * DAY_IN_MS));
             policy["endDate"] = endDate;
+            const reminderDate = new Date(endDate.getTime() - (7 * DAY_IN_MS));
+            policy["reminderDate"] = reminderDate;
         } else if (property === "reminderDate") {
             policy["reminderDate"] = value;
         }
@@ -754,6 +745,7 @@ export default class Customer extends Component {
     __savePolicy() {
 
         let policy = this.state.policy;
+        policy.startDate = this.__formatDate(policy.startDate);
 
         this.request = new AjaxRequest({
             url: "policy",
@@ -762,7 +754,7 @@ export default class Customer extends Component {
         this.request.call(policy, undefined, function (response) {
             if (response != null) {
                 Toast.success("Kayıt Başarılı");
-                this.setState({selectedCustomer: null, displayDialogPolicy: false});
+                this.setState({selectedCustomer: null, displayDialogPolicy: false, policy: null});
             } else {
                 Toast.error("Kayıt Başarısız")
             }

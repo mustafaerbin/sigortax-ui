@@ -12,6 +12,7 @@ import {Dropdown} from 'primereact/components/dropdown/Dropdown';
 import {Modal} from "react-bootstrap";
 import Calendar from "../../components/calendar/CalendarTR";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
+import {SplitButton} from 'primereact/components/splitbutton/SplitButton';
 
 export default class Policy extends Component {
 
@@ -24,10 +25,10 @@ export default class Policy extends Component {
         };
 
         this.onFilter = this.onFilter.bind(this);
-        this.__actionTemplate = this.__actionTemplate.bind(this);
         this.__savePolicy = this.__savePolicy.bind(this);
         this.dateStartTemplate = this.dateStartTemplate.bind(this);
         this.dateEndTemplate = this.dateEndTemplate.bind(this);
+        this.__actionTemplateButton = this.__actionTemplateButton.bind(this);
     }
 
     onFilter(e) {
@@ -42,24 +43,63 @@ export default class Policy extends Component {
         return this.__formatDate(new Date(rowData.endDate));
     }
 
-    // Girdin sonunda ki işlemler colonu
-    __actionTemplate(rowData, column) {
+    //
+    // // Girdin sonunda ki işlemler colonu
+    // __actionTemplate(rowData, column) {
+    //     return (
+    //         <div className="ui-helper-clearfix" style={{width: '100%'}}>
+    //             <Tooltip for="#detailButton" title="Detay" tooltipPosition="top"/>
+    //             <Button id="detailButton" type="button" icon="fa-search" className="ui-button-info"
+    //                     onClick={(rowData) => {
+    //                         this.__detailButtonPolicy(rowData, column)
+    //                     }}>
+    //             </Button>
+    //             <Tooltip for="#editButton" title="Güncelle" tooltipPosition="top"/>
+    //             <Button id="editButton" type="button" icon="fa-edit" className="ui-button-warning"
+    //                     onClick={(rowData) => {
+    //                         this.__editButton(rowData, column)
+    //                     }}>
+    //             </Button>
+    //         </div>
+    //     );
+    // }
+
+    __actionTemplateButton(rowDate, column) {
+        this.items = [
+            {
+                label: 'Detay', icon: 'fa-search', command: (rowData) => {
+                this.__actionButton(rowData, column, "detail")
+            }
+            },
+            {
+                label: 'Düzenle', icon: 'fa-edit', command: (rowData) => {
+                this.__actionButton(rowData, column, "edit")
+            }
+            },
+            {
+                label: 'Güncelle', icon: 'fa-refresh', command: (rowData) => {
+                this.__actionButton(rowData, column, "refresh")
+            }
+            },
+            {
+                label: 'Sil', icon: 'fa-close', command: (rowData) => {
+                this.__actionButton(rowData, column, "delete")
+            }
+            }
+        ];
         return (
-            <div className="ui-helper-clearfix" style={{width: '100%'}}>
-                <Tooltip for="#detailButton" title="Detay" tooltipPosition="top"/>
-                <Button id="detailButton" type="button" icon="fa-search" className="ui-button-info"
-                        onClick={(rowData) => {
-                            this.__detailButtonPolicy(rowData, column)
-                        }}>
-                </Button>
-                <Tooltip for="#editButton" title="Güncelle" tooltipPosition="top"/>
-                <Button id="editButton" type="button" icon="fa-edit" className="ui-button-warning"
-                        onClick={(rowData) => {
-                            this.__editButton(rowData, column)
-                        }}>
-                </Button>
+            <div>
+                <div className="content-section implementation splitbutton-demo">
+                    <SplitButton label="İşlem" model={this.items}
+                                 className="ui-button-info">
+                    </SplitButton>
+                </div>
             </div>
         );
+    }
+
+    save() {
+        this.setState({messages: [{severity: 'success', summary: 'Success', detail: 'Data Saved'}]});
     }
 
     render() {
@@ -78,11 +118,24 @@ export default class Policy extends Component {
                             this.setState({displayDialogDetail: false});
                         }}
                 />
-            </div>
+            </div>;
+
+
+        let dialogFooterDelete =
+            <div className="ui-dialog-buttonpane ui-helper-clearfix">
+                <Button className="ui-button-danger" label="  Sil  " icon="fa-trash"
+                        onClick={this.__savePolicy}
+                />
+                <Button icon="fa-close" label="Kapat"
+                        onClick={() => {
+                            this.setState({displayDialogDetail: false});
+                        }}
+                />
+            </div>;
 
         let dialogPolicyFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
-                <Button label="Kaydet" icon="fa-check" onClick={this.__savePolicy}
+                <Button label={this.state.addModalButtonLabel} icon="fa-check" onClick={this.__savePolicy}
                         className="ui-button-success"/>
                 <Button icon="fa-close" label="İptal"
                         onClick={() => {
@@ -109,20 +162,24 @@ export default class Policy extends Component {
                                    }}
                                    onFilter={this.onFilter}
                         >
-                            <Column field="id" header="Sis No" filter={true}
-                                    style={{textAlign: 'center', width: '7em'}}/>
                             <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
                             <Column field="company.label" header="Şirket" filter={true}/>
                             <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
                             <Column field="startDate" header="Başlangıç Tarihi" filter={true}
-                                    body={this.dateStartTemplate}/>
+                            />
                             <Column field="endDate" header="Bitiş Tarihi" filter={true}
                                     body={this.dateEndTemplate}/>
+                            <Column field="enumPolicyState" header="Durum" body={this.__statusRow}
+                                    style={{textAlign: 'center', width: '5em'}}/>
                             <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
-                            <Column header="İşlemler" body={this.__actionTemplate}
-                                    style={{textAlign: 'center', width: '6em'}}>
+                            <Column header="İşlemler" body={this.__actionTemplateButton}
+                                    style={{width: '9em'}}>
 
                             </Column>
+                            {/*<Column header="İşlemler" body={this.__actionTemplate}*/}
+                            {/*style={{textAlign: 'center', width: '6em'}}>*/}
+
+                            {/*</Column>*/}
                         </DataTable>
                     </div>
 
@@ -257,7 +314,7 @@ export default class Policy extends Component {
                             </Modal.Body>
 
                             <Modal.Footer>
-                                {dialogFooterDetail}
+                                {(this.state.type === "detail" ? dialogFooterDetail : dialogFooterDelete)}
                             </Modal.Footer>
 
                         </Modal>
@@ -270,7 +327,7 @@ export default class Policy extends Component {
                                    this.setState({displayDialogEdit: false})
                                }}>
                             <Modal.Header>
-                                <Modal.Title>Poliçe Güncelle</Modal.Title>
+                                <Modal.Title>{this.state.headerDialog}</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
                                 {
@@ -433,8 +490,20 @@ export default class Policy extends Component {
 
                 </div>
                 {this.__renderLoading()}
+            <br/><br/><br/><br/>
             </Card>
         );
+    }
+
+    // Kayıt'ın aktif pasif durum kolonu style={{textAlign: 'center', width: '5em'}}
+    __statusRow(column) {
+        if (column.enumPolicyState === "YENILENDI")
+            return <div style={{backgroundColor: '#5cb85c', padding: '.25em .5em'}}>
+                <Tooltip for="#check" title="Yenilendi" tooltipPosition="top"/>
+                <td><FaIcon id="check" style={{textAlign: 'center', width: '3em'}} code={"fa-check-square-o "}/></td>
+            </div>;
+        else
+            return <td><FaIcon code={"fa-square-o "}/></td>;
     }
 
     __renderLoading() {
@@ -460,28 +529,78 @@ export default class Policy extends Component {
 
     __savePolicy() {
 
-        let policy = this.state.policy;
-        policy["startDate"] = this.state.startDate;
-        policy["endDate"] = this.state.endDate;
-        policy["reminderDate"] = this.state.reminderDate;
+        switch (this.state.type) {
+            case"edit":
+                const policy = this.state.policy;
+                policy["startDate"] = this.__formatDate(this.state.startDate);
+                policy["endDate"] = this.__formatDate(this.state.endDate);
+                policy["reminderDate"] = this.__formatDate(this.state.reminderDate);
 
-        this.request = new AjaxRequest({
-            url: "policy",
-            type: "PUT"
-        });
-        this.request.call(policy, undefined, function (response) {
-            if (response != null) {
-                Toast.success("Kayıt Başarılı");
-                this.__getAllPolicy();
-                this.setState({
-                    policy: null,
-                    displayDialogEdit: false
+                this.request = new AjaxRequest({
+                    url: "policy",
+                    type: "PUT"
                 });
-            } else {
-                Toast.error("Kayıt Başarısız")
-            }
-            this.forceUpdate();
-        }.bind(this));
+                this.request.call(policy, undefined, function (response) {
+                    if (response != null) {
+                        Toast.success("Kayıt Başarılı");
+                        this.__getAllPolicy();
+                        this.setState({
+                            policy: null,
+                            displayDialogEdit: false
+                        });
+                    } else {
+                        Toast.error("Kayıt Başarısız")
+                    }
+                    this.forceUpdate();
+                }.bind(this));
+                break;
+            case"delete":
+                this.request = new AjaxRequest({
+                    url: "policy/" + this.state.policy.id,
+                    type: "GET"
+                });
+                this.request.call(undefined, undefined, function (response) {
+                    if (response != null) {
+                        Toast.success("Kayıt Başarılı");
+                        this.__getAllPolicy();
+                        this.setState({
+                            policy: null,
+                            displayDialogDetail: false
+                        });
+                    } else {
+                        Toast.error("Kayıt Başarısız")
+                    }
+                    this.forceUpdate();
+                }.bind(this));
+                break;
+            case "refresh":
+                const policyRefresh = this.state.policy;
+                policyRefresh.id = null,
+                    policyRefresh["startDate"] = this.__formatDate(this.state.startDate);
+                policyRefresh["endDate"] = this.__formatDate(this.state.endDate);
+                policyRefresh["reminderDate"] = this.__formatDate(this.state.reminderDate);
+
+                this.request = new AjaxRequest({
+                    url: "policy/" + this.state.oldPolicyId,
+                    type: "POST"
+                });
+                this.request.call(policyRefresh, undefined, function (response) {
+                    if (response != null) {
+                        Toast.success("Kayıt Başarılı");
+                        this.__getAllPolicy();
+                        this.setState({
+                            policy: null,
+                            displayDialogEdit: false,
+                            oldPolicyId: null
+                        });
+                    } else {
+                        Toast.error("Kayıt Başarısız")
+                    }
+                    this.forceUpdate();
+                }.bind(this));
+                break;
+        }
+
     }
 
     __updatePropertyPolicy(property, value) {
@@ -499,41 +618,75 @@ export default class Policy extends Component {
 
     __calendarOnChangeDate(property, e) {
         let value = e.value;
-        if (property === "startDate")
-            this.setState({startDate: value});
-        else if (property === "endDate")
-            this.setState({endDate: value});
-        else if (property === "reminderDate")
-            this.setState({reminderDate: value});
+        switch (property) {
+            case "startDate":
+                this.setState({startDate: value});
+                break;
+            case "endDate":
+                this.setState({endDate: value});
+                break;
+            case "reminderDate":
+                this.setState({reminderDate: value});
+        }
     }
 
     __onSelectionChange(date) {
         this.setState({selectedPolicy: date, policyAddButtonDisable: false});
     }
 
-    __detailButtonPolicy(rowData, column) {
+    __actionButton(rowData, column, type) {
         let selectedPolicy = column.rowData;
-        this.setState({
-            displayDialogDetail: true,
-            policy: selectedPolicy,
-            headerDialog: "Poliçe Bilgileri Detay"
-        })
-    }
-
-    __editButton(rowData, column) {
-        let policy = column.rowData;
-        this.__getAllCompany();
-        let startDate = new Date(policy.startDate);
-        let endDate = new Date(policy.endDate);
-        let reminderDate = new Date(policy.reminderDate);
-        this.setState({
-            displayDialogEdit: true,
-            policy: policy,
-            headerDialog: "Poliçe Bilgileri Güncelle",
-            startDate: startDate,
-            endDate: endDate,
-            reminderDate: reminderDate
-        });
+        switch (type) {
+            case "detail":
+                this.setState({
+                    displayDialogDetail: true,
+                    policy: selectedPolicy,
+                    headerDialog: "Poliçe Bilgileri Detay",
+                    type: type
+                });
+                break;
+            case "edit":
+                this.__getAllCompany();
+                const startDate = new Date(selectedPolicy.startDate);
+                const endDate = new Date(selectedPolicy.endDate);
+                const reminderDate = new Date(selectedPolicy.reminderDate);
+                this.setState({
+                    displayDialogEdit: true,
+                    policy: selectedPolicy,
+                    headerDialog: "Poliçe Bilgileri Düzenle",
+                    addModalButtonLabel: "Kaydet",
+                    startDate: startDate,
+                    endDate: endDate,
+                    reminderDate: reminderDate,
+                    type: type
+                });
+                break;
+            case "refresh":
+                this.__getAllCompany();
+                const startDateQ = new Date(selectedPolicy.startDate);
+                const endDateQ = new Date(selectedPolicy.endDate);
+                const reminderDateQ = new Date(selectedPolicy.reminderDate);
+                this.setState({
+                    displayDialogEdit: true,
+                    policy: selectedPolicy,
+                    headerDialog: "Poliçe Yenile",
+                    addModalButtonLabel: "Güncelle",
+                    startDate: startDateQ,
+                    endDate: endDateQ,
+                    reminderDate: reminderDateQ,
+                    oldPolicyId: selectedPolicy.id,
+                    type: type
+                });
+                break;
+            case "delete":
+                this.setState({
+                    displayDialogDetail: true,
+                    policy: selectedPolicy,
+                    headerDialog: "Poliçe Sil",
+                    type: type
+                });
+                break
+        }
     }
 
     __handleChangeDropDownCompany(property, e) {

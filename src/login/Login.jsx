@@ -30,7 +30,7 @@ class Login extends ShallowComponent {
     render() {
         return (
             <div className="center-block"
-                 style={{maxWidth: 300}}>
+                 style={{maxWidth: 300, margin: "30px auto"}}>
                 <Card style={{marginTop: 0}}>
                     <Form>
                         <Row style={{textAlign: "center", marginBottom: "30px"}}>
