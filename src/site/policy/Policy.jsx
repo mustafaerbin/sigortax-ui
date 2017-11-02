@@ -152,6 +152,8 @@ export default class Policy extends Component {
                         }}
                 />
             </div>;
+        const policyCount = this.state.policyList ? this.state.policyList.length : 0;
+        let footer = policyCount + ' kayıt getirildi';
 
         return (
             <Card header="Poliçe Yönetimi">
@@ -164,6 +166,7 @@ export default class Policy extends Component {
                                    onFilter={this.onFilter}
                                    selectionMode="single"
                                    selection={this.state.selectedPolicy}
+                                   footer={footer}
                             // totalRecords={this.state.totalRecords}
                             // lazy={true}
                             // onLazyLoad={this.onLazyLoad}
