@@ -44,6 +44,7 @@ export default class Customer extends Component {
         this.__updateProperty = this.__updateProperty.bind(this);
         this.__addPolicyButton = this.__addPolicyButton.bind(this);
         this.__handleChangeDropDownCompany = this.__handleChangeDropDownCompany.bind(this);
+        this.onLazyLoad = this.onLazyLoad.bind(this);
 
     }
 
@@ -53,6 +54,14 @@ export default class Customer extends Component {
 
     onPolicyCompanyChange(e) {
         this.setState({company: e});
+    }
+
+    onLazyLoad(event) {
+        setTimeout(() => {
+            if (this.datasource) {
+                this.setState({customerList: this.datasource.slice(event.first, (event.first + event.rows))});
+            }
+        }, 250);
     }
 
     // Girdin sonunda ki işlemler colonu
@@ -160,6 +169,8 @@ export default class Customer extends Component {
                                        this.__onSelectionChange(e.data)
                                    }}
                                    onFilter={this.onFilter}
+                                   totalRecords={this.state.totalRecords}
+                                   lazy={true} onLazyLoad={this.onLazyLoad}
                         >
                             <Column field="name" header="İsim" filter={true}/>
                             <Column field="surname" header="Soyisim" filter={true}/>
@@ -786,7 +797,8 @@ export default class Customer extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({customerList: response, loading: false});
+                this.datasource = response;
+                this.setState({totalRecords: response.length, loading: false});
             }
             this.forceUpdate();
         }.bind(this));
@@ -825,7 +837,7 @@ export default class Customer extends Component {
 
         request.call(companyProduct, undefined,
             (response) => {
-                this.setState({companySubProductList: response});
+                this.setState({companySubProductList: response, loading: false});
             });
     }
 

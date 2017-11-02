@@ -179,8 +179,7 @@ export default class Policy extends Component {
                             <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
                             <Column field="startDate" header="Başlangıç Tarihi" filter={true}
                             />
-                            <Column field="endDate" header="Bitiş Tarihi" filter={true}
-                                    body={this.dateEndTemplate}/>
+                            <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
                             <Column field="enumPolicyState" header="Durum" body={this.__statusRow}
                                     style={{textAlign: 'center', width: '5em'}}/>
                             <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
@@ -211,17 +210,9 @@ export default class Policy extends Component {
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="name">İsim</label></div>
+                                                htmlFor="name">İsim Soyisim</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.customer.name}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="surname">Soyisim</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.customer.surname}
+                                                {this.state.policy.customer.name} {" "} {this.state.policy.customer.surname}
                                             </div>
                                         </div>
 

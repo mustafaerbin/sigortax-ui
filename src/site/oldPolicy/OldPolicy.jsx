@@ -19,10 +19,19 @@ export default class OldPolicy extends Component {
         };
         this.onFilter = this.onFilter.bind(this);
         this.__actionTemplate = this.__actionTemplate.bind(this);
+        this.onLazyLoad = this.onLazyLoad.bind(this);
     }
 
     onFilter(e) {
         this.setState({filters: e.filters});
+    }
+
+    onLazyLoad(event) {
+        setTimeout(() => {
+            if (this.datasource) {
+                this.setState({policyList: this.datasource.slice(event.first, (event.first + event.rows))});
+            }
+        }, 250);
     }
 
     // Girdin sonunda ki işlemler colonu
@@ -80,6 +89,8 @@ export default class OldPolicy extends Component {
                                        this.setState({selectedCustomer: e.data});
                                    }}
                                    onFilter={this.onFilter}
+                                   totalRecords={this.state.totalRecords}
+                                   lazy={true} onLazyLoad={this.onLazyLoad}
                         >
                             <Column field="customer" header="İsim Soyisim" filter={true}/>
                             <Column field="company" header="Şirket" filter={true}/>
@@ -232,7 +243,8 @@ export default class OldPolicy extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({policyList: response, loading: false});
+                this.datasource = response;
+                this.setState({totalRecords: response.length, loading: false});
             }
             this.forceUpdate();
         }.bind(this));
