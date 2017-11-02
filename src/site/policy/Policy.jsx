@@ -29,6 +29,15 @@ export default class Policy extends Component {
         this.dateStartTemplate = this.dateStartTemplate.bind(this);
         this.dateEndTemplate = this.dateEndTemplate.bind(this);
         this.__actionTemplateButton = this.__actionTemplateButton.bind(this);
+        this.onLazyLoad = this.onLazyLoad.bind(this);
+    }
+
+    onLazyLoad(event) {
+        setTimeout(() => {
+            if (this.datasource) {
+                this.setState({policyList: this.datasource.slice(event.first, (event.first + event.rows))});
+            }
+        }, 250);
     }
 
     onFilter(e) {
@@ -149,11 +158,14 @@ export default class Policy extends Component {
                 <div>
                     <div className="content-section implementation">
                         <DataTable value={this.state.policyList}
-                                   paginator={true} rows={10} header={header}
+                                   paginator={true} rows={15} header={header}
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
                                    selectionMode="single"
                                    selection={this.state.selectedPolicy}
+                                   totalRecords={this.state.totalRecords}
+                                   lazy={true} onLazyLoad={this.onLazyLoad}
+
                             // onSelectionChange={(e) => {
                             //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
                             // }}
@@ -490,7 +502,7 @@ export default class Policy extends Component {
 
                 </div>
                 {this.__renderLoading()}
-            <br/><br/><br/><br/>
+                <br/><br/><br/><br/>
             </Card>
         );
     }
@@ -503,7 +515,10 @@ export default class Policy extends Component {
                 <td><FaIcon id="check" style={{textAlign: 'center', width: '3em'}} code={"fa-check-square-o "}/></td>
             </div>;
         else
-            return <td><FaIcon code={"fa-square-o "}/></td>;
+            return <div style={{padding: '.25em .5em'}}>
+                <Tooltip for="#notcheck" title="Yenilenmedi" tooltipPosition="top"/>
+                <td><FaIcon id="notcheck" style={{textAlign: 'center', width: '3em'}} code={"fa-square-o "}/></td>
+            </div>;
     }
 
     __renderLoading() {
@@ -575,10 +590,11 @@ export default class Policy extends Component {
                 break;
             case "refresh":
                 const policyRefresh = this.state.policy;
-                policyRefresh.id = null,
-                    policyRefresh["startDate"] = this.__formatDate(this.state.startDate);
+                policyRefresh.id = null;
+                policyRefresh["startDate"] = this.__formatDate(this.state.startDate);
                 policyRefresh["endDate"] = this.__formatDate(this.state.endDate);
                 policyRefresh["reminderDate"] = this.__formatDate(this.state.reminderDate);
+                policyRefresh.enumPolicyState = "YENILENMEDI";
 
                 this.request = new AjaxRequest({
                     url: "policy/" + this.state.oldPolicyId,
@@ -753,7 +769,14 @@ export default class Policy extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({policyList: response, loading: false});
+                this.datasource = response;
+                this.setState({
+                    policyList: response,
+                    totalRecords: response.length,
+                    loading:
+                        false
+                })
+                ;
             }
             this.forceUpdate();
         }.bind(this));

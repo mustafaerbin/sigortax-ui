@@ -645,7 +645,7 @@ export default class Customer extends Component {
         } else if (property === "startDate") {
             const days = 365;
             const DAY_IN_MS = 1000 * 60 * 60 * 24;
-            const endDate = new Date(value.getTime() + (days * DAY_IN_MS));
+            const endDate = new Date(value.getTime() + (days * DAY_IN_MS))
             policy["endDate"] = endDate;
             const reminderDate = new Date(endDate.getTime() - (7 * DAY_IN_MS));
             policy["reminderDate"] = reminderDate;
