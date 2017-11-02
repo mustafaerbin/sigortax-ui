@@ -29,19 +29,19 @@ export default class Policy extends Component {
         this.dateStartTemplate = this.dateStartTemplate.bind(this);
         this.dateEndTemplate = this.dateEndTemplate.bind(this);
         this.__actionTemplateButton = this.__actionTemplateButton.bind(this);
-        this.onLazyLoad = this.onLazyLoad.bind(this);
     }
 
-    onLazyLoad(event) {
-        setTimeout(() => {
-            if (this.datasource) {
-                this.setState({policyList: this.datasource.slice(event.first, (event.first + event.rows))});
-            }
-        }, 250);
-    }
+    // onLazyLoad(event) {
+    //     setTimeout(() => {
+    //         if (this.datasource) {
+    //             this.setState({policyList: this.datasource.slice(event.first, (event.first + event.rows))});
+    //         }
+    //     }, 250);
+    // }
 
     onFilter(e) {
         this.setState({filters: e.filters});
+        this.onLazyLoad();
     }
 
     dateStartTemplate(rowData, column) {
@@ -91,7 +91,7 @@ export default class Policy extends Component {
             }
             },
             {
-                label: 'Sil', icon: 'fa-close', command: (rowData) => {
+                label: 'Sil', icon: 'fa-trash', command: (rowData) => {
                 this.__actionButton(rowData, column, "delete")
             }
             }
@@ -161,18 +161,18 @@ export default class Policy extends Component {
                                    paginator={true} rows={15} header={header}
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
+                                   onFilter={this.onFilter}
                                    selectionMode="single"
                                    selection={this.state.selectedPolicy}
-                                   totalRecords={this.state.totalRecords}
-                                   lazy={true} onLazyLoad={this.onLazyLoad}
-
+                            // totalRecords={this.state.totalRecords}
+                            // lazy={true}
+                            // onLazyLoad={this.onLazyLoad}
                             // onSelectionChange={(e) => {
                             //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
                             // }}
                                    onSelectionChange={(e) => {
                                        this.__onSelectionChange(e.data)
                                    }}
-                                   onFilter={this.onFilter}
                         >
                             <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
                             <Column field="company.label" header="Şirket" filter={true}/>
@@ -760,10 +760,9 @@ export default class Policy extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.datasource = response;
+                //this.datasource = response;
                 this.setState({
                     policyList: response,
-                    totalRecords: response.length,
                     loading:
                         false
                 })
