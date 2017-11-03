@@ -106,5 +106,5 @@ export default class Header extends ShallowComponent {
     __onToggle = () => {
         if (this.props.onToggle)
             this.props.onToggle();
-    }  
+    }
 }

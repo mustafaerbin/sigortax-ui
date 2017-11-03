@@ -21,7 +21,8 @@ export default class Policy extends Component {
         this.state = {
             filters: {},
             selectedPolicy: {},
-            loading: true
+            loading: true,
+            policyList: []
         };
 
         this.onFilter = this.onFilter.bind(this);
@@ -29,6 +30,7 @@ export default class Policy extends Component {
         this.dateStartTemplate = this.dateStartTemplate.bind(this);
         this.dateEndTemplate = this.dateEndTemplate.bind(this);
         this.__actionTemplateButton = this.__actionTemplateButton.bind(this);
+        this.onBrandChange = this.onBrandChange.bind(this);
     }
 
     // onLazyLoad(event) {
@@ -111,6 +113,12 @@ export default class Policy extends Component {
         this.setState({messages: [{severity: 'success', summary: 'Success', detail: 'Data Saved'}]});
     }
 
+    onBrandChange(e) {
+        let filters = this.state.filters;
+        filters['enumPolicyState'] = {value: e.value};
+        this.setState({filters: filters});
+    }
+
     render() {
 
         let header =
@@ -152,346 +160,360 @@ export default class Policy extends Component {
                         }}
                 />
             </div>;
+        let carCount = this.state.policyList ? this.state.policyList.length : 0;
+        let footer = carCount + ' kayıt bulundu';
+
+        let brands = [
+            {label: 'Seçiniz', value: null},
+            {label: 'Yenilendi', value: 'YENILENDI'},
+            {label: 'Yenilenmedi', value: 'YENILENMEDI'}
+        ];
+        let brandFilter =
+            <Dropdown className="ui-column-filter"
+                      style={{textAlign: 'center', width: '4em'}}
+                      value={this.state.filters.enumPolicyState ? this.state.filters.enumPolicyState.value : null}
+                      options={brands} onChange={this.onBrandChange}/>
 
         return (
             <Card header="Poliçe Yönetimi">
-                <div>
-                    <div className="content-section implementation">
-                        <DataTable value={this.state.policyList}
-                                   paginator={true} rows={15} header={header}
-                                   globalFilter={this.state.globalFilter}
-                                   filters={this.state.filters}
-                                   onFilter={this.onFilter}
-                                   selectionMode="single"
-                                   selection={this.state.selectedPolicy}
-                            // totalRecords={this.state.totalRecords}
-                            // lazy={true}
-                            // onLazyLoad={this.onLazyLoad}
-                            // onSelectionChange={(e) => {
-                            //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
-                            // }}
-                                   onSelectionChange={(e) => {
-                                       this.__onSelectionChange(e.data)
-                                   }}
-                        >
-                            <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
-                            <Column field="company.label" header="Şirket" filter={true}/>
-                            <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
-                            <Column field="startDate" header="Başlangıç Tarihi" filter={true}
-                            />
-                            <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
-                            <Column field="enumPolicyState" header="Durum" body={this.__statusRow}
-                                    style={{textAlign: 'center', width: '5em'}}/>
-                            <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
-                            <Column header="İşlemler" body={this.__actionTemplateButton}
-                                    style={{width: '9em'}}>
+                <div className="content-section implementation">
+                    {carCount} kayıt bulundu
+                    <DataTable value={this.state.policyList}
+                               paginator={true}
+                               rows={15}
+                               rowsPerPageOptions={[15, 30, 45]}
+                               header={header}
+                               globalFilter={this.state.globalFilter}
+                               filters={this.state.filters}
+                               onFilter={this.onFilter}
+                               selection={this.state.selectedPolicy}
+                        // totalRecords={this.state.totalRecords}
+                        // lazy={true}
+                        // onLazyLoad={this.onLazyLoad}
+                        // onSelectionChange={(e) => {
+                        //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
+                        // }}
+                               onSelectionChange={(e) => {
+                                   this.__onSelectionChange(e.data)
+                               }}
+                    >
+                        <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
+                        <Column field="company.label" header="Şirket" filter={true}/>
+                        <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
+                        <Column field="startDate" header="Başlangıç Tarihi" filter={true}/>
+                        <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
+                        <Column field="enumPolicyState" header="Durum" body={this.__statusRow}
+                                filter={true} filterElement={brandFilter} filterMatchMode="equals"
+                                style={{textAlign: 'center', width: '5em'}}/>
+                        <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
+                        <Column header="İşlemler" body={this.__actionTemplateButton}
+                                style={{width: '9em'}}>
 
-                            </Column>
-                            {/*<Column header="İşlemler" body={this.__actionTemplate}*/}
-                            {/*style={{textAlign: 'center', width: '6em'}}>*/}
+                        </Column>
+                        {/*<Column header="İşlemler" body={this.__actionTemplate}*/}
+                        {/*style={{textAlign: 'center', width: '6em'}}>*/}
 
-                            {/*</Column>*/}
-                        </DataTable>
-                    </div>
-
-                    {/*poliçe detay popup*/}
-                    <div className="content-section implementation">
-                        <Modal show={this.state.displayDialogDetail}
-                               onHide={() => {
-                                   this.setState({displayDialogDetail: false})
-                               }}>
-                            <Modal.Header>
-                                <Modal.Title>{this.state.headerDialog}</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                {
-                                    this.state.policy &&
-                                    <div className="ui-grid ui-grid-responsive ui-fluid">
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="name">İsim Soyisim</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.customer.name} {" "} {this.state.policy.customer.surname}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="mobilePhone">Mobil Tel</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.customer.mobilePhone}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="email">E-Mail</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.customer.email}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="company">Şirket</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.company.label}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companyProduct">Şirket Ürünü</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.companyProduct.label}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.companySubProduct.label}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="startDate">Poliçe Başlangıç tarihi</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.__formatDate(new Date(this.state.policy.startDate))}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.__formatDate(new Date(this.state.policy.endDate))}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="endDate">Poliçe Hatırlatma Tarihi</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.__formatDate(new Date(this.state.policy.reminderDate))}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="userMessage">Poliçe Hatırlatma Mesajı</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.userMessage}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="policyNumber">Poliçe Numarası</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.policyNumber}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="policyEmount">Poliçe Tutarı</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.policyEmount}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="description">Açıklama</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.description}
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                }
-                            </Modal.Body>
-
-                            <Modal.Footer>
-                                {(this.state.type === "detail" ? dialogFooterDetail : dialogFooterDelete)}
-                            </Modal.Footer>
-
-                        </Modal>
-                    </div>
-
-                    {/*güncelle ve kaydet popup*/}
-                    <div className="content-section implementation">
-                        <Modal show={this.state.displayDialogEdit}
-                               onHide={() => {
-                                   this.setState({displayDialogEdit: false})
-                               }}>
-                            <Modal.Header>
-                                <Modal.Title>{this.state.headerDialog}</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                {
-                                    this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="company">Şirket</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Dropdown
-                                                    value={this.state.policy.company.label}
-                                                    options={this.state.companyList}
-                                                    onChange={(e) => {
-                                                        this.__handleChangeDropDownCompany("company", e)
-                                                    }}
-                                                    style={{width: 'ui-grid-col-8'}}
-                                                    placeholder="Şirket Seçiniz"
-                                                    editable={true}
-                                                    filter={true}
-                                                    filterPlaceholder="Şirket Ara"
-                                                    filterBy="label,value"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companyProduct">Şirket Ürünü</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Dropdown value={this.state.policy.companyProduct.label}
-                                                          options={this.state.companyProductList}
-                                                          onChange={(e) => {
-                                                              this.__handleChangeDropDownCompany("companyProduct", e)
-                                                          }}
-                                                          style={{width: 'ui-grid-col-8'}}
-                                                          placeholder="Ürün Seçiniz"
-                                                          editable={true}
-                                                          filter={true}
-                                                          filterPlaceholder="Ürün Ara"
-                                                          filterBy="label,value"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Dropdown value={this.state.policy.companySubProduct.label}
-                                                          options={this.state.companySubProductList}
-                                                          onChange={(e) => {
-                                                              this.__handleChangeDropDownCompany("companySubProduct", e)
-                                                          }}
-                                                          style={{width: 'ui-grid-col-8'}}
-                                                          placeholder="Alt Ürün Seçiniz"
-                                                          editable={true}
-                                                          filter={true}
-                                                          filterPlaceholder="Alt Ürün Ara"
-                                                          filterBy="label,value"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="startDate">Poliçe Başlangıç Tarihi</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Calendar
-                                                    id="startDate"
-                                                    value={this.state.startDate}
-                                                    onChange={(e) => {
-                                                        this.__calendarOnChangeDate("startDate", e)
-                                                    }}
-                                                >
-                                                </Calendar>
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Calendar
-                                                    id="endDate"
-                                                    value={this.state.endDate}
-                                                    onChange={(e) => {
-                                                        this.__calendarOnChangeDate("endDate", e)
-                                                    }}
-                                                >
-                                                </Calendar>
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="reminderDate">Poliçe Hatırlatma Tarihi</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Calendar
-                                                    id="reminderDate"
-                                                    value={this.state.reminderDate}
-                                                    onChange={(e) => {
-                                                        this.__calendarOnChangeDate("reminderDate", e)
-                                                    }}
-                                                >
-                                                </Calendar>
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="userMessage">Poliçe Hatırlatıcı Mesaj</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <InputTextarea id="userMessage" onChange={(e) => {
-                                                    this.__updatePropertyPolicy('userMessage', e.target.value)
-                                                }} value={this.state.policy.userMessage}/>
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="policyNumber">Poliçe Numarası</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <InputText id="policyNumber" onChange={(e) => {
-                                                    this.__updatePropertyPolicy('policyNumber', e.target.value)
-                                                }} value={this.state.policy.policyNumber}/>
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="policyEmount">Poliçe Tutarı</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <InputText id="policyEmount" onChange={(e) => {
-                                                    this.__updatePropertyPolicy('policyEmount', e.target.value)
-                                                }} value={this.state.policy.policyEmount}/>
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="description">Açıklama</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <InputTextarea id="description" onChange={(e) => {
-                                                    this.__updatePropertyPolicy('description', e.target.value)
-                                                }} value={this.state.policy.description}/>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                }
-                            </Modal.Body>
-
-                            <Modal.Footer>
-                                {dialogPolicyFooter}
-                            </Modal.Footer>
-
-                        </Modal>
-                    </div>
-
+                        {/*</Column>*/}
+                    </DataTable>
                 </div>
+
+                {/*poliçe detay popup*/}
+                <div className="content-section implementation">
+                    <Modal show={this.state.displayDialogDetail}
+                           onHide={() => {
+                               this.setState({displayDialogDetail: false})
+                           }}>
+                        <Modal.Header>
+                            <Modal.Title>{this.state.headerDialog}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {
+                                this.state.policy &&
+                                <div className="ui-grid ui-grid-responsive ui-fluid">
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="name">İsim Soyisim</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.customer.name} {" "} {this.state.policy.customer.surname}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="mobilePhone">Mobil Tel</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.customer.mobilePhone}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="email">E-Mail</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.customer.email}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="company">Şirket</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.company.label}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="companyProduct">Şirket Ürünü</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.companyProduct.label}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.companySubProduct.label}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="startDate">Poliçe Başlangıç tarihi</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.__formatDate(new Date(this.state.policy.startDate))}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.__formatDate(new Date(this.state.policy.endDate))}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="endDate">Poliçe Hatırlatma Tarihi</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.__formatDate(new Date(this.state.policy.reminderDate))}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="userMessage">Poliçe Hatırlatma Mesajı</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.userMessage}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="policyNumber">Poliçe Numarası</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.policyNumber}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="policyEmount">Poliçe Tutarı</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.policyEmount}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="description">Açıklama</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.description}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                            {(this.state.type === "detail" ? dialogFooterDetail : dialogFooterDelete)}
+                        </Modal.Footer>
+
+                    </Modal>
+                </div>
+
+                {/*güncelle ve kaydet popup*/}
+                <div className="content-section implementation">
+                    <Modal show={this.state.displayDialogEdit}
+                           onHide={() => {
+                               this.setState({displayDialogEdit: false})
+                           }}>
+                        <Modal.Header>
+                            <Modal.Title>{this.state.headerDialog}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {
+                                this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="company">Şirket</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <Dropdown
+                                                value={this.state.policy.company.label}
+                                                options={this.state.companyList}
+                                                onChange={(e) => {
+                                                    this.__handleChangeDropDownCompany("company", e)
+                                                }}
+                                                style={{width: 'ui-grid-col-8'}}
+                                                placeholder="Şirket Seçiniz"
+                                                editable={true}
+                                                filter={true}
+                                                filterPlaceholder="Şirket Ara"
+                                                filterBy="label,value"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="companyProduct">Şirket Ürünü</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <Dropdown value={this.state.policy.companyProduct.label}
+                                                      options={this.state.companyProductList}
+                                                      onChange={(e) => {
+                                                          this.__handleChangeDropDownCompany("companyProduct", e)
+                                                      }}
+                                                      style={{width: 'ui-grid-col-8'}}
+                                                      placeholder="Ürün Seçiniz"
+                                                      editable={true}
+                                                      filter={true}
+                                                      filterPlaceholder="Ürün Ara"
+                                                      filterBy="label,value"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <Dropdown value={this.state.policy.companySubProduct.label}
+                                                      options={this.state.companySubProductList}
+                                                      onChange={(e) => {
+                                                          this.__handleChangeDropDownCompany("companySubProduct", e)
+                                                      }}
+                                                      style={{width: 'ui-grid-col-8'}}
+                                                      placeholder="Alt Ürün Seçiniz"
+                                                      editable={true}
+                                                      filter={true}
+                                                      filterPlaceholder="Alt Ürün Ara"
+                                                      filterBy="label,value"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="startDate">Poliçe Başlangıç Tarihi</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <Calendar
+                                                id="startDate"
+                                                value={this.state.startDate}
+                                                onChange={(e) => {
+                                                    this.__calendarOnChangeDate("startDate", e)
+                                                }}
+                                            >
+                                            </Calendar>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="endDate">Poliçe Bitiş Tarihi</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <Calendar
+                                                id="endDate"
+                                                value={this.state.endDate}
+                                                onChange={(e) => {
+                                                    this.__calendarOnChangeDate("endDate", e)
+                                                }}
+                                            >
+                                            </Calendar>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="reminderDate">Poliçe Hatırlatma Tarihi</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <Calendar
+                                                id="reminderDate"
+                                                value={this.state.reminderDate}
+                                                onChange={(e) => {
+                                                    this.__calendarOnChangeDate("reminderDate", e)
+                                                }}
+                                            >
+                                            </Calendar>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="userMessage">Poliçe Hatırlatıcı Mesaj</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <InputTextarea id="userMessage" onChange={(e) => {
+                                                this.__updatePropertyPolicy('userMessage', e.target.value)
+                                            }} value={this.state.policy.userMessage}/>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="policyNumber">Poliçe Numarası</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <InputText id="policyNumber" onChange={(e) => {
+                                                this.__updatePropertyPolicy('policyNumber', e.target.value)
+                                            }} value={this.state.policy.policyNumber}/>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="policyEmount">Poliçe Tutarı</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <InputText id="policyEmount" onChange={(e) => {
+                                                this.__updatePropertyPolicy('policyEmount', e.target.value)
+                                            }} value={this.state.policy.policyEmount}/>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="description">Açıklama</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <InputTextarea id="description" onChange={(e) => {
+                                                this.__updatePropertyPolicy('description', e.target.value)
+                                            }} value={this.state.policy.description}/>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            }
+                        </Modal.Body>
+
+                        <Modal.Footer>
+                            {dialogPolicyFooter}
+                        </Modal.Footer>
+
+                    </Modal>
+                </div>
+
                 {this.__renderLoading()}
                 <br/><br/><br/><br/>
             </Card>

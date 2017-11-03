@@ -129,7 +129,7 @@ export default class Customer extends Component {
                             this.setState({displayDialogDetail: false});
                         }}
                 />
-            </div>
+            </div>;
 
         let dialogPolicyFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
@@ -146,8 +146,12 @@ export default class Customer extends Component {
             <Card header="Müşteri Yönetimi">
                 <div>
                     <div className="content-section implementation">
+                        {this.state.customerList.length} kayıt bulundu
                         <DataTable value={this.state.customerList}
-                                   paginator={true} rows={10} header={header}
+                                   paginator={true}
+                                   rows={15}
+                                   rowsPerPageOptions={[10,20,30]}
+                                   header={header}
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
                                    selectionMode="single"
@@ -625,8 +629,6 @@ export default class Customer extends Component {
                 policyNumber: "",
                 policyEmount: "",
                 agencyId: this.state.selectedCustomer.id
-
-
             },
             displayDialogPolicy: true,
             headerDialog: "Poliçe Ekle"
