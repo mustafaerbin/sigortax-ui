@@ -664,6 +664,7 @@ export default class Policy extends Component {
         this.setState({selectedPolicy: date, policyAddButtonDisable: false});
     }
 
+    // row'un sonunda ki işlemler butonu
     __actionButton(rowData, column, type) {
         let selectedPolicy = column.rowData;
         switch (type) {
