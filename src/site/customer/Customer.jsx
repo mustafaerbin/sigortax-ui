@@ -628,7 +628,7 @@ export default class Customer extends Component {
                 customerMessage: "",
                 policyNumber: "",
                 policyEmount: "",
-                agencyId: this.state.selectedCustomer.id
+                agencyId: null
             },
             displayDialogPolicy: true,
             headerDialog: "Poliçe Ekle"
