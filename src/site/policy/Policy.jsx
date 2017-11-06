@@ -187,6 +187,7 @@ export default class Policy extends Component {
                                filters={this.state.filters}
                                onFilter={this.onFilter}
                                selection={this.state.selectedPolicy}
+
                         // totalRecords={this.state.totalRecords}
                         // lazy={true}
                         // onLazyLoad={this.onLazyLoad}
