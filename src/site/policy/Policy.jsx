@@ -119,6 +119,29 @@ export default class Policy extends Component {
         this.setState({filters: filters});
     }
 
+    // Kayıt'ın aktif pasif durum kolonu style={{textAlign: 'center', width: '5em'}}
+    __statusRow(column) {
+        if (column.enumPolicyState === "YENILENDI") {
+            return (
+                <div>
+                    <Tooltip for="#check" title="Yenilendi" tooltipPosition="top"/>
+                    <div style={{backgroundColor: '#5cb85c', padding: '.25em .5em'}}>
+                        <i id="check" className="fa fa-check-square-o " style={{textAlign: 'center', width: '3em'}}/>
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <div style={{padding: '.25em .5em'}}>
+                        <Tooltip for="#nocheck" title="Yenilenmedi" tooltipPosition="top"/>
+                        <i id="nocheck" className="fa fa-square-o "/>
+                    </div>
+                </div>
+            );
+        }
+    }
+
     render() {
 
         let header =
@@ -521,19 +544,6 @@ export default class Policy extends Component {
         );
     }
 
-    // Kayıt'ın aktif pasif durum kolonu style={{textAlign: 'center', width: '5em'}}
-    __statusRow(column) {
-        if (column.enumPolicyState === "YENILENDI")
-            return <div style={{backgroundColor: '#5cb85c', padding: '.25em .5em'}}>
-                <Tooltip for="#check" title="Yenilendi" tooltipPosition="top"/>
-                <td><FaIcon id="check" style={{textAlign: 'center', width: '3em'}} code={"fa-check-square-o "}/></td>
-            </div>;
-        else
-            return <div style={{padding: '.25em .5em'}}>
-                <Tooltip for="#notcheck" title="Yenilenmedi" tooltipPosition="top"/>
-                <td><FaIcon id="notcheck" style={{textAlign: 'center', width: '3em'}} code={"fa-square-o "}/></td>
-            </div>;
-    }
 
     __renderLoading() {
         if (this.state.loading) {
@@ -650,7 +660,11 @@ export default class Policy extends Component {
         let value = e.value;
         switch (property) {
             case "startDate":
-                this.setState({startDate: value});
+                const days = 365;
+                const DAY_IN_MS = 1000 * 60 * 60 * 24;
+                const endDate = new Date(value.getTime() + (days * DAY_IN_MS));
+                const reminderDate = new Date(endDate.getTime() - (7 * DAY_IN_MS));
+                this.setState({startDate: value, endDate: endDate, reminderDate: reminderDate});
                 break;
             case "endDate":
                 this.setState({endDate: value});
@@ -678,9 +692,9 @@ export default class Policy extends Component {
                 break;
             case "edit":
                 this.__getAllCompany();
-                const startDate = new Date(selectedPolicy.startDate);
-                const endDate = new Date(selectedPolicy.endDate);
-                const reminderDate = new Date(selectedPolicy.reminderDate);
+                let startDate = new Date(selectedPolicy.startDate);
+                let endDate = new Date(selectedPolicy.endDate);
+                let reminderDate = new Date(selectedPolicy.reminderDate);
                 this.setState({
                     displayDialogEdit: true,
                     policy: selectedPolicy,

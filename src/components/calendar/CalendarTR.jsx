@@ -18,7 +18,9 @@ export default class CalendarTR extends Component {
             dayNamesShort: ["p.tesi", "sa", "ça", "pe", "cu", "c.tesi", "pa"],
             dayNamesMin: ["P", "S", "Ç", "P", "C", "C", "P"],
             monthNames: ["Ocak", "Subat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
-            monthNamesShort: ["oca", "şub", "mar", "nis", "may", "haz", "tem", "ağu", "eyl", "eki", "kas", "ara"]
+            monthNamesShort: ["oca", "şub", "mar", "nis", "may", "haz", "tem", "ağu", "eyl", "eki", "kas", "ara"],
+            today: 'Bugün',
+            clear: 'Temizle'
         };
 
         return (
@@ -26,7 +28,7 @@ export default class CalendarTR extends Component {
                 <Calendar
                     value={this.props.value}
                     locale={tr}
-                    dateFormat="dd-MM-yy"
+                    dateFormat="dd-mm-yy"
                     onChange={this.props.onChange}
                     monthNavigator="true"
                     yearNavigator="true"

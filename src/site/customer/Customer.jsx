@@ -150,11 +150,10 @@ export default class Customer extends Component {
                         <DataTable value={this.state.customerList}
                                    paginator={true}
                                    rows={15}
-                                   rowsPerPageOptions={[10,20,30]}
+                                   rowsPerPageOptions={[15, 30, 45]}
                                    header={header}
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
-                                   selectionMode="single"
                                    footer={tableFooter}
                                    selection={this.state.selectedCustomer}
                             // onSelectionChange={(e) => {
@@ -415,7 +414,7 @@ export default class Customer extends Component {
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="company">Şirket</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <div className="content-section implementation" style={{padding: '4px 10px'}}>
                                                 <Dropdown
                                                     value={this.state.policy.company.label}
                                                     options={this.state.companyList}
@@ -424,7 +423,7 @@ export default class Customer extends Component {
                                                     }}
                                                     style={{width: 'ui-grid-col-8'}}
                                                     placeholder="Şirket Seçiniz"
-                                                    editable={true}
+                                                    editable={false}
                                                     filter={true}
                                                     filterPlaceholder="Şirket Ara"
                                                     filterBy="label,value"
@@ -564,6 +563,7 @@ export default class Customer extends Component {
                     </div>
                 </div>
                 {this.__renderLoading()}
+                <br/><br/><br/><br/>
             </Card>
         );
     }
