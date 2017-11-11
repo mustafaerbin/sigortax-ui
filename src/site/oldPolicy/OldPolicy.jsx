@@ -45,7 +45,8 @@ export default class OldPolicy extends Component {
         this.setState({
             displayDialogDetail: true,
             policy: selectedPolicy,
-            headerDialog: "Poliçe Bilgileri Detay"
+            headerDialog: "Poliçe Bilgileri Detay",
+            loading: true
         })
     }
 
@@ -62,15 +63,16 @@ export default class OldPolicy extends Component {
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
                 <Button icon="fa-close" label="Kapat"
                         onClick={() => {
-                            this.setState({displayDialogDetail: false});
+                            this.setState({displayDialogDetail: false, loading: false});
                         }}
                 />
-            </div>
+            </div>;
 
         return (
-            <Card header="Geçmiş Poliçeler">
+            <Card header="Geçmiş Poliçeler" loading={this.state.loading}>
                 <div>
                     <div className="content-section implementation">
+                        {this.state.policyList ? this.state.policyList.length : 0} kayıt bulundu
                         <DataTable value={this.state.policyList}
                                    paginator={true} rows={10} header={header}
                                    globalFilter={this.state.globalFilter}
@@ -208,20 +210,8 @@ export default class OldPolicy extends Component {
                         </Modal>
                     </div>
                 </div>
-                {this.__renderLoading()}
             </Card>
         );
-    }
-
-    __renderLoading() {
-        if (this.state.loading) {
-            return (
-                <div className="text-center">
-                    <FaIcon
-                        code="fa-spinner fa-spin"
-                        size="fa-5x"/>
-                </div>);
-        }
     }
 
     __getAllPolicy() {

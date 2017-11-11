@@ -14,6 +14,7 @@ import Calendar from "../../components/calendar/CalendarTR";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import {SplitButton} from 'primereact/components/splitbutton/SplitButton';
 
+
 export default class Policy extends Component {
 
     constructor(props) {
@@ -43,8 +44,7 @@ export default class Policy extends Component {
 
     onFilter(e) {
         this.setState({filters: e.filters});
-        this.onLazyLoad();
-    }
+    };
 
     dateStartTemplate(rowData, column) {
         return this.__formatDate(new Date(rowData.startDate));
@@ -75,6 +75,7 @@ export default class Policy extends Component {
     //     );
     // }
 
+    // row'un sonunda ki işlemler butonu
     __actionTemplateButton(rowDate, column) {
         this.items = [
             {
@@ -155,7 +156,7 @@ export default class Policy extends Component {
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
                 <Button icon="fa-close" label="Kapat"
                         onClick={() => {
-                            this.setState({displayDialogDetail: false});
+                            this.setState({displayDialogDetail: false, loading: false});
                         }}
                 />
             </div>;
@@ -168,7 +169,7 @@ export default class Policy extends Component {
                 />
                 <Button icon="fa-close" label="Kapat"
                         onClick={() => {
-                            this.setState({displayDialogDetail: false});
+                            this.setState({displayDialogDetail: false, loading: false});
                         }}
                 />
             </div>;
@@ -179,7 +180,7 @@ export default class Policy extends Component {
                         className="ui-button-success"/>
                 <Button icon="fa-close" label="İptal"
                         onClick={() => {
-                            this.setState({displayDialogEdit: false});
+                            this.setState({displayDialogEdit: false, loading: false});
                         }}
                 />
             </div>;
@@ -198,9 +199,10 @@ export default class Policy extends Component {
                       options={brands} onChange={this.onBrandChange}/>
 
         return (
-            <Card header="Poliçe Yönetimi">
+            <Card header="Poliçe Yönetimi"
+                  loading={this.state.loading}>
                 <div className="content-section implementation">
-                    {carCount} kayıt bulundu
+                    {this.state.policyList ? this.state.policyList.length : 0} kayıt bulundu
                     <DataTable value={this.state.policyList}
                                paginator={true}
                                rows={15}
@@ -538,22 +540,9 @@ export default class Policy extends Component {
                     </Modal>
                 </div>
 
-                {this.__renderLoading()}
                 <br/><br/><br/><br/>
             </Card>
         );
-    }
-
-
-    __renderLoading() {
-        if (this.state.loading) {
-            return (
-                <div className="text-center">
-                    <FaIcon
-                        code="fa-spinner fa-spin"
-                        size="fa-5x"/>
-                </div>);
-        }
     }
 
     __formatDate(d) {
@@ -583,13 +572,14 @@ export default class Policy extends Component {
                     if (response != null) {
                         Toast.success("Kayıt Başarılı");
                         this.__getAllPolicy();
-                        this.setState({
-                            policy: null,
-                            displayDialogEdit: false
-                        });
                     } else {
-                        Toast.error("Kayıt Başarısız")
+                        Toast.error("Kayıt Başarısız");
                     }
+                    this.setState({
+                        policy: null,
+                        displayDialogEdit: false,
+                        loading: false
+                    });
                     this.forceUpdate();
                 }.bind(this));
                 break;
@@ -602,13 +592,14 @@ export default class Policy extends Component {
                     if (response != null) {
                         Toast.success("Kayıt Başarılı");
                         this.__getAllPolicy();
-                        this.setState({
-                            policy: null,
-                            displayDialogDetail: false
-                        });
                     } else {
                         Toast.error("Kayıt Başarısız")
                     }
+                    this.setState({
+                        policy: null,
+                        displayDialogDetail: false,
+                        loading: false
+                    });
                     this.forceUpdate();
                 }.bind(this));
                 break;
@@ -628,19 +619,19 @@ export default class Policy extends Component {
                     if (response != null) {
                         Toast.success("Kayıt Başarılı");
                         this.__getAllPolicy();
-                        this.setState({
-                            policy: null,
-                            displayDialogEdit: false,
-                            oldPolicyId: null
-                        });
                     } else {
                         Toast.error("Kayıt Başarısız")
                     }
+                    this.setState({
+                        policy: null,
+                        displayDialogEdit: false,
+                        oldPolicyId: null,
+                        loading: false
+                    });
                     this.forceUpdate();
                 }.bind(this));
                 break;
         }
-
     }
 
     __updatePropertyPolicy(property, value) {
@@ -732,6 +723,7 @@ export default class Policy extends Component {
                 });
                 break
         }
+        this.setState({loading: true});
     }
 
     __handleChangeDropDownCompany(property, e) {
@@ -760,7 +752,7 @@ export default class Policy extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({companyList: response, loading: false});
+                this.setState({companyList: response});
             }
             this.forceUpdate();
         }.bind(this));
@@ -773,7 +765,7 @@ export default class Policy extends Component {
         });
         request.call(company, undefined,
             (response) => {
-                this.setState({companyProductList: response, loading: false});
+                this.setState({companyProductList: response});
             });
     }
 
@@ -785,7 +777,7 @@ export default class Policy extends Component {
 
         request.call(companyProduct, undefined,
             (response) => {
-                this.setState({companySubProductList: response, loading: false});
+                this.setState({companySubProductList: response});
             });
     }
 
@@ -801,10 +793,8 @@ export default class Policy extends Component {
                 //this.datasource = response;
                 this.setState({
                     policyList: response,
-                    loading:
-                        false
-                })
-                ;
+                    loading: false
+                });
             }
             this.forceUpdate();
         }.bind(this));

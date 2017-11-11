@@ -2,6 +2,8 @@ import React from "react";
 import ShallowComponent from "robe-react-commons/lib/components/ShallowComponent";
 import Col from "react-bootstrap/lib/Col";
 import "./style.css";
+import Loading from "../components/loadingbar/Loading";
+
 
 export default class Card extends ShallowComponent {
 
@@ -35,6 +37,7 @@ export default class Card extends ShallowComponent {
         if (this.props.className)
             className += " " + this.props.className;
         return (
+
             <Col
                 xs={this.props.xs}
                 sm={this.props.sm}
@@ -42,6 +45,9 @@ export default class Card extends ShallowComponent {
                 lg={this.props.lg}
                 className={className}
                 style={this.props.style}>
+                <Loading
+                    show={this.props.loading}
+                />
                 <Col className="card-header"
                      style={{display: this.props.header ? "inherit" : "none"}}>
                     <Col className="card-title">
@@ -54,4 +60,5 @@ export default class Card extends ShallowComponent {
             </Col>
         );
     };
+
 }

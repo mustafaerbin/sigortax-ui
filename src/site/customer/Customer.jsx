@@ -117,7 +117,7 @@ export default class Customer extends Component {
                         className="ui-button-success"/>
                 <Button icon="fa-close" label="İptal"
                         onClick={() => {
-                            this.setState({displayDialog: false});
+                            this.setState({displayDialog: false, loading: false});
                         }}
                 />
             </div>;
@@ -126,7 +126,7 @@ export default class Customer extends Component {
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
                 <Button icon="fa-close" label="Kapat"
                         onClick={() => {
-                            this.setState({displayDialogDetail: false});
+                            this.setState({displayDialogDetail: false, loading: false});
                         }}
                 />
             </div>;
@@ -137,13 +137,13 @@ export default class Customer extends Component {
                         className="ui-button-success"/>
                 <Button icon="fa-close" label="İptal"
                         onClick={() => {
-                            this.setState({displayDialogPolicy: false});
+                            this.setState({displayDialogPolicy: false, loading: false});
                         }}
                 />
             </div>;
 
         return (
-            <Card header="Müşteri Yönetimi">
+            <Card header="Müşteri Yönetimi" loading={this.state.loading}>
                 <div>
                     <div className="content-section implementation">
                         {this.state.customerList.length} kayıt bulundu
@@ -154,6 +154,7 @@ export default class Customer extends Component {
                                    header={header}
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
+                                   selectionMode="single"
                                    footer={tableFooter}
                                    selection={this.state.selectedCustomer}
                             // onSelectionChange={(e) => {
@@ -400,7 +401,6 @@ export default class Customer extends Component {
                             <Modal.Body>
                                 {
                                     this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">
-
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="musteri">Müşteri</label></div>
@@ -414,7 +414,7 @@ export default class Customer extends Component {
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                                 htmlFor="company">Şirket</label></div>
-                                            <div className="content-section implementation" style={{padding: '4px 10px'}}>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                                 <Dropdown
                                                     value={this.state.policy.company.label}
                                                     options={this.state.companyList}
@@ -423,7 +423,7 @@ export default class Customer extends Component {
                                                     }}
                                                     style={{width: 'ui-grid-col-8'}}
                                                     placeholder="Şirket Seçiniz"
-                                                    editable={false}
+                                                    editable={true}
                                                     filter={true}
                                                     filterPlaceholder="Şirket Ara"
                                                     filterBy="label,value"
@@ -562,21 +562,9 @@ export default class Customer extends Component {
                         </Modal>
                     </div>
                 </div>
-                {this.__renderLoading()}
                 <br/><br/><br/><br/>
             </Card>
         );
-    }
-
-    __renderLoading() {
-        if (this.state.loading) {
-            return (
-                <div className="text-center">
-                    <FaIcon
-                        code="fa-spinner fa-spin"
-                        size="fa-5x"/>
-                </div>);
-        }
     }
 
     __updateProperty(property, value) {
@@ -607,7 +595,8 @@ export default class Customer extends Component {
                 description: ''
             },
             displayDialog: true,
-            headerDialog: "Yeni Müşteri Kaydet"
+            headerDialog: "Yeni Müşteri Kaydet",
+            loading: true
         });
     }
 
@@ -631,7 +620,8 @@ export default class Customer extends Component {
                 agencyId: null
             },
             displayDialogPolicy: true,
-            headerDialog: "Poliçe Ekle"
+            headerDialog: "Poliçe Ekle",
+            loading: true
         });
     }
 
@@ -697,7 +687,8 @@ export default class Customer extends Component {
         this.setState({
             displayDialogDetail: true,
             customer: selectedCustomer,
-            headerDialog: "Müşteri Bilgileri Detay"
+            headerDialog: "Müşteri Bilgileri Detay",
+            loading: true
         })
     }
 
@@ -707,7 +698,8 @@ export default class Customer extends Component {
         this.setState({
             displayDialog: true,
             customer: selectedCustomer,
-            headerDialog: "Müşteri Bilgileri Güncelle"
+            headerDialog: "Müşteri Bilgileri Güncelle",
+            loading: true
         });
 
     }
@@ -715,7 +707,6 @@ export default class Customer extends Component {
     __deleteButton(rowData, column) {
         let selectedCustomer = column.rowData
         selectedCustomer.status = false;
-
 
     }
 
@@ -734,7 +725,7 @@ export default class Customer extends Component {
         this.request.call(this.state.customer, undefined, function (response) {
             if (response != null) {
                 Toast.success("Kayıt Başarılı");
-                this.setState({selectedCustomer: null, displayDialog: false});
+                this.setState({selectedCustomer: null, displayDialog: false, loading: false});
             } else {
                 Toast.error("Kayıt Başarısız")
             }
@@ -756,7 +747,7 @@ export default class Customer extends Component {
         this.request.call(policy, undefined, function (response) {
             if (response != null) {
                 Toast.success("Kayıt Başarılı");
-                this.setState({selectedCustomer: null, displayDialogPolicy: false, policy: null});
+                this.setState({selectedCustomer: null, displayDialogPolicy: false, policy: null, loading: false});
             } else {
                 Toast.error("Kayıt Başarısız")
             }
@@ -803,7 +794,7 @@ export default class Customer extends Component {
 
         request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({companyList: response, loading: false});
+                this.setState({companyList: response});
             }
             this.forceUpdate();
         }.bind(this));
@@ -828,7 +819,7 @@ export default class Customer extends Component {
 
         request.call(companyProduct, undefined,
             (response) => {
-                this.setState({companySubProductList: response, loading: false});
+                this.setState({companySubProductList: response});
             });
     }
 
