@@ -413,7 +413,7 @@ export default class Customer extends Component {
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="company">Şirket</label></div>
+                                                htmlFor="company">Sigorta Şirketi</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                                 <Dropdown
                                                     value={this.state.policy.company.label}
@@ -431,28 +431,10 @@ export default class Customer extends Component {
                                             </div>
                                         </div>
 
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companyProduct">Şirket Ürünü</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                <Dropdown value={this.state.policy.companyProduct.label}
-                                                          options={this.state.companyProductList}
-                                                          onChange={(e) => {
-                                                              this.__handleChangeDropDownCompany("companyProduct", e)
-                                                          }}
-                                                          style={{width: 'ui-grid-col-8'}}
-                                                          placeholder="Ürün Seçiniz"
-                                                          editable={true}
-                                                          filter={true}
-                                                          filterPlaceholder="Ürün Ara"
-                                                          filterBy="label,value"
-                                                />
-                                            </div>
-                                        </div>
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
+                                                htmlFor="companySubProduct">Şirket Poliçe Türü</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                                 <Dropdown value={this.state.policy.companySubProduct.label}
                                                           options={this.state.companySubProductList}
@@ -460,14 +442,52 @@ export default class Customer extends Component {
                                                               this.__handleChangeDropDownCompany("companySubProduct", e)
                                                           }}
                                                           style={{width: 'ui-grid-col-8'}}
-                                                          placeholder="Alt Ürün Seçiniz"
+                                                          placeholder="Poliçe Türü Seçiniz"
                                                           editable={true}
                                                           filter={true}
-                                                          filterPlaceholder="Alt Ürün Ara"
+                                                          filterPlaceholder="Poliçe Türü Ara"
                                                           filterBy="label,value"
                                                 />
                                             </div>
                                         </div>
+
+                                        {/*<div className="ui-grid-row">*/}
+                                        {/*<div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label*/}
+                                        {/*htmlFor="companyProduct">Şirket Ürünü</label></div>*/}
+                                        {/*<div className="ui-grid-col-8" style={{padding: '4px 10px'}}>*/}
+                                        {/*<Dropdown value={this.state.policy.companyProduct.label}*/}
+                                        {/*options={this.state.companyProductList}*/}
+                                        {/*onChange={(e) => {*/}
+                                        {/*this.__handleChangeDropDownCompany("companyProduct", e)*/}
+                                        {/*}}*/}
+                                        {/*style={{width: 'ui-grid-col-8'}}*/}
+                                        {/*placeholder="Ürün Seçiniz"*/}
+                                        {/*editable={true}*/}
+                                        {/*filter={true}*/}
+                                        {/*filterPlaceholder="Ürün Ara"*/}
+                                        {/*filterBy="label,value"*/}
+                                        {/*/>*/}
+                                        {/*</div>*/}
+                                        {/*</div>*/}
+
+                                        {/*<div className="ui-grid-row">*/}
+                                        {/*<div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label*/}
+                                        {/*htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>*/}
+                                        {/*<div className="ui-grid-col-8" style={{padding: '4px 10px'}}>*/}
+                                        {/*<Dropdown value={this.state.policy.companySubProduct.label}*/}
+                                        {/*options={this.state.companySubProductList}*/}
+                                        {/*onChange={(e) => {*/}
+                                        {/*this.__handleChangeDropDownCompany("companySubProduct", e)*/}
+                                        {/*}}*/}
+                                        {/*style={{width: 'ui-grid-col-8'}}*/}
+                                        {/*placeholder="Alt Ürün Seçiniz"*/}
+                                        {/*editable={true}*/}
+                                        {/*filter={true}*/}
+                                        {/*filterPlaceholder="Alt Ürün Ara"*/}
+                                        {/*filterBy="label,value"*/}
+                                        {/*/>*/}
+                                        {/*</div>*/}
+                                        {/*</div>*/}
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
@@ -660,17 +680,22 @@ export default class Customer extends Component {
 
     __handleChangeDropDownCompany(property, e) {
         let value = e.value;
-        let selected = this.state.companyList.find(o => o.value === value);
         let policy = this.state.policy;
-        policy[property] = selected;
         switch (property) {
             case "company":
+                const selected = this.state.companyList.find(o => o.value === value);
+                policy[property] = selected;
+                policy["companySubProduct"] = {};
                 this.__getAllCompanyProduct(selected);
                 break;
             case "companyProduct":
-                this.__getAllCompanySubProduct(selected);
+                const selectedProduct = this.state.companyProductList.find(o => o.value === value);
+                policy[property] = selectedProduct;
+                this.__getAllCompanySubProduct(selectedProduct);
                 break;
             case "companySubProduct":
+                const selectedSubProduct = this.state.companySubProductList.find(o => o.value === value);
+                policy[property] = selectedSubProduct;
                 break;
         }
         this.setState({policy: policy});
@@ -738,8 +763,7 @@ export default class Customer extends Component {
     __savePolicy() {
 
         let policy = this.state.policy;
-        policy.startDate = this.__formatDate(policy.startDate);
-
+        //policy.startDate = this.__formatDate(policy.startDate);
         this.request = new AjaxRequest({
             url: "policy",
             type: "POST"
@@ -802,12 +826,12 @@ export default class Customer extends Component {
 
     __getAllCompanyProduct(company) {
         let request = new AjaxRequest({
-            url: "company/list-company-product",
+            url: "company/list-company-sub-product",
             type: "POST"
         });
         request.call(company, undefined,
             (response) => {
-                this.setState({companyProductList: response});
+                this.setState({companySubProductList: response});
             });
     }
 

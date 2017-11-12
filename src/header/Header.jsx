@@ -13,6 +13,10 @@ export default class Header extends ShallowComponent {
         toggled: React.PropTypes.bool
     };
 
+    static contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
+
     static defaultProps = {
         toggled: false,
         matches: false
@@ -65,11 +69,12 @@ export default class Header extends ShallowComponent {
                     </Col>
                     <Col className="pull-right">
                         <Button
-                            className="robe-navbar-button">
+                            className="robe-navbar-button" onClick={this.__onUser}>
                             <FaIcon code="fa-user"/>
                         </Button>
                         <Button
-                            className="robe-navbar-button">
+                            className="robe-navbar-button"
+                        >
                             <FaIcon code="fa-comments-o"/>
                             <Badge>{this.state.messageCount}</Badge>
                         </Button>
@@ -89,10 +94,13 @@ export default class Header extends ShallowComponent {
         );
     }
 
+    __onUser = () => {
+        this.context.router.push("Site/UserManager");
+    };
     __onExit = () => {
         cookie.remove('domain');
         cookie.remove('username');
-        window.location.hash="";
+        window.location.hash = "";
 
         this.logoutPost.call(undefined, undefined,
             function (res) {
