@@ -86,8 +86,7 @@ export default class OldPolicy extends Component {
                         >
                             <Column field="customer" header="İsim Soyisim" filter={true}/>
                             <Column field="company" header="Şirket" filter={true}/>
-                            <Column field="companyProduct" header="Şirket Ürünü" filter={true}/>
-                            <Column field="companySubProduct" header="Şirket Alt ürünü" filter={true}/>
+                            <Column field="companyPolicyType" header="Poliçe Türü" filter={true}/>
                             <Column field="startDate" header="Başlangıç Tarihi" filter={true}/>
                             <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
                             <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
@@ -129,17 +128,9 @@ export default class OldPolicy extends Component {
 
                                         <div className="ui-grid-row">
                                             <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companyProduct">Şirket Ürünü</label></div>
+                                                htmlFor="companySubProduct">Şirket Poliçe Türü</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.companyProduct}
-                                            </div>
-                                        </div>
-
-                                        <div className="ui-grid-row">
-                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                                htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
-                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                                {this.state.policy.companySubProduct}
+                                                {this.state.policy.companyPolicyType}
                                             </div>
                                         </div>
 
@@ -188,6 +179,23 @@ export default class OldPolicy extends Component {
                                                 htmlFor="policyEmount">Poliçe Tutarı</label></div>
                                             <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                                 {this.state.policy.policyEmount}
+                                            </div>
+                                        </div>
+
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="vehiclePlate">Taşıt Plakası</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                {this.state.policy.vehiclePlate}
+                                            </div>
+                                        </div>
+
+                                        <div className="ui-grid-row">
+                                            <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                                htmlFor="registryNumber">Tescil Belge No</label></div>
+                                            <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                                {this.state.policy.registryNumber}
                                             </div>
                                         </div>
 

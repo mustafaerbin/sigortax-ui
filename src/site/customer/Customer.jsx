@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import Card from "../../card/Card";
-import {TabView, TabPanel} from 'primereact/components/tabview/TabView';
 import CustomerGercek from "./CustomerGercek";
 import CustomerTuzel from "./CustomerTuzel";
 import Tabs from 'react-bootstrap/lib/Tabs';
@@ -35,12 +34,4 @@ export default class Customer extends Component {
             </Card>
         );
     }
-
-    __onTabChange() {
-        let a = 4;
-    };
-
-    componentDidMount() {
-    };
-
 }

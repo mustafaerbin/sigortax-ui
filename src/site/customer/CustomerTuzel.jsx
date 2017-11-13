@@ -725,13 +725,11 @@ export default class CustomerTuzel extends Component {
             headerDialog: "Müşteri Bilgileri Güncelle",
             loading: true
         });
-
     }
 
     __deleteButton(rowData, column) {
         let selectedCustomer = column.rowData
         selectedCustomer.status = false;
-
     }
 
     __saveCustomer() {
@@ -779,7 +777,7 @@ export default class CustomerTuzel extends Component {
     }
 
     __delete() {
-        let index = this.__findSelectedCarIndex();
+        let index = this.__findSelectedCustomerIndex();
         this.setState({
             customerList: this.state.customerList.filter((val, i) => i !== index),
             selectedCar: null,
@@ -789,7 +787,7 @@ export default class CustomerTuzel extends Component {
         });
     }
 
-    __findSelectedCarIndex() {
+    __findSelectedCustomerIndex() {
         return this.state.customerList.indexOf(this.state.selectedCustomer);
     }
 

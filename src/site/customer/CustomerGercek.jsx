@@ -599,7 +599,7 @@ export default class CustomerOzel extends Component {
             loading: true
         });
     }
-
+    // Giridin altındaki poliçe ekle Butonu
     __addPolicyButton() {
 
         this.__getAllCompany();
@@ -683,7 +683,6 @@ export default class CustomerOzel extends Component {
 
 
     __detailButton(rowData, column) {
-        let a = 4;
         let selectedCustomer = column.rowData;
         this.setState({
             displayDialogDetail: true,
@@ -702,13 +701,11 @@ export default class CustomerOzel extends Component {
             headerDialog: "Müşteri Bilgileri Güncelle",
             loading: true
         });
-
     }
 
     __deleteButton(rowData, column) {
         let selectedCustomer = column.rowData
         selectedCustomer.status = false;
-
     }
 
     __saveCustomer() {
@@ -756,7 +753,7 @@ export default class CustomerOzel extends Component {
     }
 
     __delete() {
-        let index = this.__findSelectedCarIndex();
+        let index = this.__findSelectedCustomerIndex();
         this.setState({
             customerList: this.state.customerList.filter((val, i) => i !== index),
             selectedCar: null,
@@ -766,7 +763,7 @@ export default class CustomerOzel extends Component {
         });
     }
 
-    __findSelectedCarIndex() {
+    __findSelectedCustomerIndex() {
         return this.state.customerList.indexOf(this.state.selectedCustomer);
     }
 

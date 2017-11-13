@@ -7,6 +7,7 @@ import {Button} from 'primereact/components/button/Button';
 import Toast from "robe-react-ui/lib/toast/Toast";
 import SHA256 from "crypto-js/sha256";
 import {Tooltip} from 'primereact/components/tooltip/Tooltip';
+import Loading from "../../components/loadingbar/Loading";
 
 export default class UserManager extends Component {
 
@@ -14,7 +15,8 @@ export default class UserManager extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            agencyUser: null
+            agencyUser: null,
+            loading: true,
         };
         this.__save = this.__save.bind(this);
         this.__cancel = this.__cancel.bind(this);
@@ -24,6 +26,9 @@ export default class UserManager extends Component {
     render() {
         return (
             <Card header="Kullanıcı Yönetimi">
+                <Loading
+                    show={this.state.loading}
+                />
                 {
                     this.state.agencyUser &&
                     <div className="ui-grid ui-grid-responsive ui-fluid">
@@ -188,7 +193,7 @@ export default class UserManager extends Component {
         });
         this.request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({agencyUser: response, oldAgencyUser: response});
+                this.setState({agencyUser: response, oldAgencyUser: response, loading: false});
             } else {
                 Toast.error("İşlem Başarısız")
             }
