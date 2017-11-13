@@ -65,7 +65,7 @@ export default class Policy extends Component {
     //                         this.__detailButtonPolicy(rowData, column)
     //                     }}>
     //             </Button>
-    //             <Tooltip for="#editButton" title="Güncelle" tooltipPosition="top"/>
+    //             <Tooltip for="#editButton" title="Yenile" tooltipPosition="top"/>
     //             <Button id="editButton" type="button" icon="fa-edit" className="ui-button-warning"
     //                     onClick={(rowData) => {
     //                         this.__editButton(rowData, column)
@@ -89,7 +89,7 @@ export default class Policy extends Component {
             }
             },
             {
-                label: 'Güncelle', icon: 'fa-refresh', command: (rowData) => {
+                label: 'Yenile', icon: 'fa-refresh', command: (rowData) => {
                 this.__actionButton(rowData, column, "refresh")
             }
             },
@@ -225,7 +225,7 @@ export default class Policy extends Component {
                     >
                         <Column field="customerFullName" header="İsim Soyisim" filter={true}/>
                         <Column field="company.label" header="Şirket" filter={true}/>
-                        <Column field="companySubProduct.label" header="Şirket ürünü" filter={true}/>
+                        <Column field="companyPolicyType.label" header="Poliçe Türü" filter={true}/>
                         <Column field="startDate" header="Başlangıç Tarihi" filter={true}/>
                         <Column field="endDate" header="Bitiş Tarihi" filter={true}/>
                         <Column field="enumPolicyState" header="Durum" body={this.__statusRow}
@@ -234,11 +234,9 @@ export default class Policy extends Component {
                         <Column field="agencyUserFullName" header="Kullanıcı" filter={true}/>
                         <Column header="İşlemler" body={this.__actionTemplateButton}
                                 style={{width: '9em'}}>
-
                         </Column>
                         {/*<Column header="İşlemler" body={this.__actionTemplate}*/}
                         {/*style={{textAlign: 'center', width: '6em'}}>*/}
-
                         {/*</Column>*/}
                     </DataTable>
                 </div>
@@ -267,17 +265,9 @@ export default class Policy extends Component {
 
                                     <div className="ui-grid-row">
                                         <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="mobilePhone">Mobil Tel</label></div>
+                                            htmlFor="mobilePhone">Mobil Tel / E-Mail</label></div>
                                         <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            {this.state.policy.customer.mobilePhone}
-                                        </div>
-                                    </div>
-
-                                    <div className="ui-grid-row">
-                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="email">E-Mail</label></div>
-                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            {this.state.policy.customer.email}
+                                            {this.state.policy.customer.mobilePhone} {" / "} {this.state.policy.customer.email}
                                         </div>
                                     </div>
 
@@ -291,17 +281,9 @@ export default class Policy extends Component {
 
                                     <div className="ui-grid-row">
                                         <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="companyProduct">Şirket Ürünü</label></div>
+                                            htmlFor="companySubProduct">Şirket Poliçe Türü</label></div>
                                         <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            {this.state.policy.companyProduct.label}
-                                        </div>
-                                    </div>
-
-                                    <div className="ui-grid-row">
-                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
-                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            {this.state.policy.companySubProduct.label}
+                                            {this.state.policy.companyPolicyType.label}
                                         </div>
                                     </div>
 
@@ -355,6 +337,22 @@ export default class Policy extends Component {
 
                                     <div className="ui-grid-row">
                                         <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="vehiclePlate">Taşıt Plakası</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.vehiclePlate}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="registryNumber">Tescil Belge No</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            {this.state.policy.registryNumber}
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                             htmlFor="description">Açıklama</label></div>
                                         <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                             {this.state.policy.description}
@@ -372,7 +370,7 @@ export default class Policy extends Component {
                     </Modal>
                 </div>
 
-                {/*güncelle ve kaydet popup*/}
+                {/*yenile ve kaydet popup*/}
                 <div className="content-section implementation">
                     <Modal show={this.state.displayDialogEdit}
                            onHide={() => {
@@ -407,37 +405,18 @@ export default class Policy extends Component {
 
                                     <div className="ui-grid-row">
                                         <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="companyProduct">Şirket Ürünü</label></div>
+                                            htmlFor="companyPolicyType">Şirket Poliçe Türü</label></div>
                                         <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            <Dropdown value={this.state.policy.companyProduct.label}
-                                                      options={this.state.companyProductList}
+                                            <Dropdown value={this.state.policy.companyPolicyType.label}
+                                                      options={this.state.companyPolicyTypeList}
                                                       onChange={(e) => {
-                                                          this.__handleChangeDropDownCompany("companyProduct", e)
+                                                          this.__handleChangeDropDownCompany("companyPolicyType", e)
                                                       }}
                                                       style={{width: 'ui-grid-col-8'}}
-                                                      placeholder="Ürün Seçiniz"
+                                                      placeholder="Poliçe Türü Seçiniz"
                                                       editable={true}
                                                       filter={true}
-                                                      filterPlaceholder="Ürün Ara"
-                                                      filterBy="label,value"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="ui-grid-row">
-                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="companySubProduct">Şirket Alt Ürünü</label></div>
-                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            <Dropdown value={this.state.policy.companySubProduct.label}
-                                                      options={this.state.companySubProductList}
-                                                      onChange={(e) => {
-                                                          this.__handleChangeDropDownCompany("companySubProduct", e)
-                                                      }}
-                                                      style={{width: 'ui-grid-col-8'}}
-                                                      placeholder="Alt Ürün Seçiniz"
-                                                      editable={true}
-                                                      filter={true}
-                                                      filterPlaceholder="Alt Ürün Ara"
+                                                      filterPlaceholder="Poliçe Türü Ara"
                                                       filterBy="label,value"
                                             />
                                         </div>
@@ -520,6 +499,26 @@ export default class Policy extends Component {
 
                                     <div className="ui-grid-row">
                                         <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="vehiclePlate">Taşıt Plakası</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <InputText id="vehiclePlate" onChange={(e) => {
+                                                this.__updatePropertyPolicy('vehiclePlate', e.target.value)
+                                            }} value={this.state.policy.vehiclePlate}/>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
+                                            htmlFor="registryNumber">Tescil Belge No</label></div>
+                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
+                                            <InputText id="registryNumber" onChange={(e) => {
+                                                this.__updatePropertyPolicy('registryNumber', e.target.value)
+                                            }} value={this.state.policy.registryNumber}/>
+                                        </div>
+                                    </div>
+
+                                    <div className="ui-grid-row">
+                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
                                             htmlFor="description">Açıklama</label></div>
                                         <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
                                             <InputTextarea id="description" onChange={(e) => {
@@ -529,10 +528,8 @@ export default class Policy extends Component {
                                     </div>
 
                                 </div>
-
                             }
                         </Modal.Body>
-
                         <Modal.Footer>
                             {dialogPolicyFooter}
                         </Modal.Footer>
@@ -706,7 +703,7 @@ export default class Policy extends Component {
                     displayDialogEdit: true,
                     policy: selectedPolicy,
                     headerDialog: "Poliçe Yenile",
-                    addModalButtonLabel: "Güncelle",
+                    addModalButtonLabel: "Yenile",
                     startDate: startDateQ,
                     endDate: endDateQ,
                     reminderDate: reminderDateQ,
@@ -728,17 +725,16 @@ export default class Policy extends Component {
 
     __handleChangeDropDownCompany(property, e) {
         let value = e.value;
-        let selected = this.state.companyList.find(o => o.value === value);
         let policy = this.state.policy;
-        policy[property] = selected;
         switch (property) {
             case "company":
-                this.__getAllCompanyProduct(selected);
+                const selected = this.state.companyList.find(o => o.value === value);
+                policy[property] = selected;
+                this.__getAllCompanyPolicyType(selected);
                 break;
-            case "companyProduct":
-                this.__getAllCompanySubProduct(selected);
-                break;
-            case "companySubProduct":
+            case "companyPolicyType":
+                const selectedPolicyType = this.state.companyPolicyTypeList.find(o => o.value === value);
+                policy[property] = selectedPolicyType;
                 break;
         }
         this.setState({policy: policy});
@@ -756,6 +752,18 @@ export default class Policy extends Component {
             }
             this.forceUpdate();
         }.bind(this));
+    }
+
+    __getAllCompanyPolicyType(company) {
+        let request = new AjaxRequest({
+            url: "company/list-company-policy-type",
+            type: "POST"
+        });
+
+        request.call(company, undefined,
+            (response) => {
+                this.setState({companyPolicyTypeList: response});
+            });
     }
 
     __getAllCompanyProduct(company) {
