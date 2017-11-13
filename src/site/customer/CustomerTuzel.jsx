@@ -14,6 +14,7 @@ import Calendar from "../../components/calendar/CalendarTR";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import {InputSwitch} from 'primereact/components/inputswitch/InputSwitch';
 import {InputMask} from 'primereact/components/inputmask/InputMask';
+import Loading from "../../components/loadingbar/Loading";
 
 export default class CustomerTuzel extends Component {
 
@@ -140,7 +141,11 @@ export default class CustomerTuzel extends Component {
 
         return (
             <div>
+                <Loading
+                    show={this.state.loading}
+                />
                 <div className="content-section implementation">
+                    <br/>
                     {this.state.customerList.length} kayıt bulundu
                     <DataTable value={this.state.customerList}
                                paginator={true}
