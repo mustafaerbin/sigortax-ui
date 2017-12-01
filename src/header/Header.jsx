@@ -1,11 +1,12 @@
 import React from "react";
 import ShallowComponent from "robe-react-commons/lib/components/ShallowComponent";
 import AjaxRequest from "robe-react-commons/lib/connections/AjaxRequest";
-import {Navbar, Col, Badge, Image, Button} from "react-bootstrap";
+import {Navbar, Col, Badge, Image, Button, OverlayTrigger, Popover, strong} from "react-bootstrap";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import Link from "react-router/lib/Link";
 import cookie from "react-cookie";
 import "./style.css";
+import {Tooltip} from 'primereact/components/tooltip/Tooltip';
 
 export default class Header extends ShallowComponent {
     static propTypes = {
@@ -35,6 +36,13 @@ export default class Header extends ShallowComponent {
     }
 
     render() {
+
+        const popoverBottom = (
+            <Popover id="popover-positioned-bottom" title="Bildirimler">
+                Yeni yildiriminiz bulunmamaktadır.
+            </Popover>
+        );
+
         return (
             <Col className="robe-navbar">
                 <div className="robe-navbar-content">
@@ -68,22 +76,32 @@ export default class Header extends ShallowComponent {
                         </Link>
                     </Col>
                     <Col className="pull-right">
+                        <Tooltip for="#user" title="Kullanıcı Yönetimi" tooltipPosition="top"/>
                         <Button
+                            id="user"
                             className="robe-navbar-button" onClick={this.__onUser}>
                             <FaIcon code="fa-user"/>
                         </Button>
+                        <Tooltip for="#messageCount" title="Mesajlar" tooltipPosition="top"/>
                         <Button
+                            id="messageCount"
                             className="robe-navbar-button"
                         >
                             <FaIcon code="fa-comments-o"/>
                             <Badge>{this.state.messageCount}</Badge>
                         </Button>
+                        <Tooltip for="#notificationCount" title="Bildirimler" tooltipPosition="top"/>
+                        <OverlayTrigger trigger="click" placement="bottom" overlay={popoverBottom}>
+                            <Button
+                                id="notificationCount"
+                                className="robe-navbar-button">
+                                <FaIcon code="fa-bell"/>
+                                <Badge>{this.state.notificationCount}</Badge>
+                            </Button>
+                        </OverlayTrigger>
+                        <Tooltip for="#exit" title="Çıkış" tooltipPosition="top"/>
                         <Button
-                            className="robe-navbar-button">
-                            <FaIcon code="fa-bell"/>
-                            <Badge>{this.state.notificationCount}</Badge>
-                        </Button>
-                        <Button
+                            id="exit"
                             className="robe-navbar-button"
                             onClick={this.__onExit}>
                             <FaIcon code="fa-sign-out"/>

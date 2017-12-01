@@ -8,6 +8,7 @@ import Toast from "robe-react-ui/lib/toast/Toast";
 import SHA256 from "crypto-js/sha256";
 import {Tooltip} from 'primereact/components/tooltip/Tooltip';
 import Loading from "../../components/loadingbar/Loading";
+import {InputMask} from 'primereact/components/inputmask/InputMask';
 
 export default class UserManager extends Component {
 
@@ -84,9 +85,13 @@ export default class UserManager extends Component {
                             <div className="ui-grid-col-2" style={{padding: '4px 10px'}}><label
                                 htmlFor="mobilePhone">Telefon</label></div>
                             <div className="ui-grid-col-6" style={{padding: '4px 10px'}}>
-                                <InputText id="mobilePhone" onChange={(e) => {
-                                    this.__updateProperty('mobilePhone', e.target.value)
-                                }} value={this.state.agencyUser.mobilePhone}/>
+                                <InputMask id="mobilePhone"
+                                           mask="0(999) 999-9999"
+                                           placeholder="(999) 999-9999"
+                                           onChange={(e) => {
+                                               this.__updateProperty('mobilePhone', e.value)
+                                           }} value={this.state.agencyUser.mobilePhone}>
+                                </InputMask>
                             </div>
                         </div>
 

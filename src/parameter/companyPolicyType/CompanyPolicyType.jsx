@@ -86,10 +86,10 @@ export default class CompanyPolicyType extends Component {
                 />
             </div>;
         return (
-            <Card header="Şirket Alt Ürün Yönetimi">
-
+            <Card header="Şirket Pöliçe Türü Yönetimi">
                 <div>
                     <div className="content-section implementation">
+                        {this.state.companyPolicyTypeList ? this.state.companyPolicyTypeList.length : 0} kayıt bulundu
                         <DataTable value={this.state.companyPolicyTypeList}
                                    paginator={true} rows={10} header={header}
                                    globalFilter={this.state.globalFilter}

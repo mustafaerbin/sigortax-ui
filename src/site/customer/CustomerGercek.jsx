@@ -55,14 +55,21 @@ export default class CustomerOzel extends Component {
     // Girdin sonunda ki işlemler colonu
     __actionTemplate(rowData, column) {
         return (
-            <div className="ui-helper-clearfix" style={{width: '100%'}}>
+            <div className="ui-helper-clearfix">
+
+                <Tooltip for="#policyButton" title="Poliçe Ekle" tooltipPosition="top"/>
+                <Button id="policyButton" icon="fa-plus" type="button" className="ui-button-success"
+                        onClick={(rowData) => {
+                            this.__addPolicyButton(rowData, column)
+                        }}/>
+
                 <Tooltip for="#detailButton" title="Detay" tooltipPosition="top"/>
                 <Button id="detailButton" type="button" icon="fa-search" className="ui-button-info"
                         onClick={(rowData) => {
                             this.__detailButton(rowData, column)
                         }}>
                 </Button>
-                <Tooltip for="#editButton" title="Güncelle" tooltipPosition="top"/>
+                <Tooltip for="#editButton" title="Düzenle" tooltipPosition="top"/>
                 <Button id="editButton" type="button" icon="fa-edit" className="ui-button-warning"
                         onClick={(rowData) => {
                             this.__editButton(rowData, column)
@@ -92,10 +99,13 @@ export default class CustomerOzel extends Component {
 
     render() {
         let header =
+
             <div style={{'textAlign': 'left'}}>
                 <i className="fa fa-search" style={{margin: '4px 4px 0 0'}}></i>
                 <InputText type="search" onInput={(e) => this.setState({globalFilter: e.target.value})}
                            placeholder="Genel Arama" size="50"/>
+                <Button icon="fa-plus" label="Yeni Müşteri" style={{float: 'right'}}
+                        onClick={this.__newCustomerButton} className="ui-button-success"/>
             </div>;
 
         let tableFooter =
@@ -103,9 +113,10 @@ export default class CustomerOzel extends Component {
                 <Button id="__newCustomerButton" style={{float: 'left'}} icon="fa-plus" label="Yeni Müşteri"
                         onClick={this.__newCustomerButton}
                         className="ui-button-success"/>
-                <Button style={{float: 'left'}} icon="fa-plus" label="Poliçe Ekle" onClick={this.__addPolicyButton}
-                        disabled={this.state.policyAddButtonDisable}
-                        className="ui-button-success"/>
+                {/*<Button style={{float: 'left'}} icon="fa-plus" label="Poliçe Ekle"*/}
+                {/*onClick={this.__addPolicyButton}*/}
+                {/*disabled={this.state.policyAddButtonDisable}*/}
+                {/*className="ui-button-success"/>*/}
             </div>;
 
         let dialogFooter =
@@ -154,8 +165,6 @@ export default class CustomerOzel extends Component {
                                header={header}
                                globalFilter={this.state.globalFilter}
                                filters={this.state.filters}
-                               selectionMode="single"
-                               footer={tableFooter}
                                selection={this.state.selectedCustomer}
                         // onSelectionChange={(e) => {
                         //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
@@ -172,7 +181,7 @@ export default class CustomerOzel extends Component {
                         <Column field="status" header="Durum" body={this.__statusRow}
                                 style={{textAlign: 'center', width: '5em'}}/>
                         <Column header="İşlemler" body={this.__actionTemplate}
-                                style={{textAlign: 'center', width: '7em'}}>
+                                style={{textAlign: 'center', width: '8em'}}>
                         </Column>
                     </DataTable>
                 </div>
@@ -395,20 +404,15 @@ export default class CustomerOzel extends Component {
                            onHide={() => {
                                this.setState({displayDialogPolicy: false})
                            }}>
-                        <Modal.Header>
-                            <Modal.Title>Poliçe Ekle</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            {
-                                this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">
-                                    <div className="ui-grid-row">
-                                        <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
-                                            htmlFor="musteri">Müşteri</label></div>
-                                        <div className="ui-grid-col-8" style={{padding: '4px 10px'}}>
-                                            <label>{this.state.policy.customer.name}{' '}{this.state.policy.customer.surname}
-                                            </label>
-                                        </div>
-                                    </div>
+                        {
+                            this.state.policy && <div className="ui-grid ui-grid-responsive ui-fluid">
+                                <Modal.Header>
+                                    <Modal.Title>Poliçe Ekle
+                                        / {this.state.policy.customer.name}{' '}{this.state.policy.customer.surname}
+                                    </Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+
 
                                     <div className="ui-grid-row">
                                         <div className="ui-grid-col-4" style={{padding: '4px 10px'}}><label
@@ -553,10 +557,8 @@ export default class CustomerOzel extends Component {
                                             }} value={this.state.policy.description}/>
                                         </div>
                                     </div>
-
-                                </div>
-                            }
-                        </Modal.Body>
+                                </Modal.Body>
+                            </div>}
                         <Modal.Footer>
                             {dialogPolicyFooter}
                         </Modal.Footer>
@@ -599,20 +601,21 @@ export default class CustomerOzel extends Component {
             loading: true
         });
     }
-    // Giridin altındaki poliçe ekle Butonu
-    __addPolicyButton() {
 
+    // Giridin altındaki poliçe ekle Butonu
+    __addPolicyButton(rowData, column) {
+        let selectedCustomer = column.rowData;
         this.__getAllCompany();
         this.setState({
             policy: {
-                customer: this.state.selectedCustomer,
+                customer: selectedCustomer,
                 company: {},
                 companyPolicyType: {},
                 startDate: null,
                 endDate: null,
                 description: "",
                 reminderDate: null,
-                userMessage: this.state.selectedCustomer.name + " " + this.state.selectedCustomer.surname + " isimli müşterinin poliçesi bitmek üzere.",
+                userMessage: selectedCustomer.name + " " + selectedCustomer.surname + " isimli müşterinin poliçesi bitmek üzere.",
                 customerMessage: "",
                 policyNumber: "",
                 policyEmount: "",
@@ -698,7 +701,7 @@ export default class CustomerOzel extends Component {
         this.setState({
             displayDialog: true,
             customer: selectedCustomer,
-            headerDialog: "Müşteri Bilgileri Güncelle",
+            headerDialog: "Müşteri Bilgileri Düzenle",
             loading: true
         });
     }
