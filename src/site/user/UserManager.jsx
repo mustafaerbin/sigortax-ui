@@ -149,7 +149,7 @@ export default class UserManager extends Component {
     __save() {
         let agencyUser = this.state.agencyUser;
 
-        if (agencyUser.password !== this.state.oldAgencyUser.password) {
+        if (agencyUser.password !== this.state.oldAgencyUserPassword) {
             agencyUser.password = SHA256(agencyUser.password).toString();
         }
         this.request = new AjaxRequest({
@@ -198,7 +198,7 @@ export default class UserManager extends Component {
         });
         this.request.call(undefined, undefined, function (response) {
             if (response != null) {
-                this.setState({agencyUser: response, oldAgencyUser: response, loading: false});
+                this.setState({agencyUser: response, oldAgencyUserPassword: response.password, loading: false});
             } else {
                 Toast.error("İşlem Başarısız")
             }

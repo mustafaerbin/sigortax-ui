@@ -8,6 +8,7 @@ import {Modal} from "react-bootstrap";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import {Tooltip} from 'primereact/components/tooltip/Tooltip';
 import {Button} from 'primereact/components/button/Button';
+import {BreadCrumb} from 'primereact/components/breadcrumb/BreadCrumb';
 
 export default class OldPolicy extends Component {
 
@@ -69,7 +70,11 @@ export default class OldPolicy extends Component {
             </div>;
 
         return (
-            <Card header="Geçmiş Poliçeler" loading={this.state.loading}>
+            <Card loading={this.state.loading}>
+                <BreadCrumb model={[
+                    {label: 'Site'},
+                    {label: 'Geçmiş Poliçeler'}
+                ]}/>
                 <div>
                     <div className="content-section implementation">
                         {this.state.policyList ? this.state.policyList.length : 0} kayıt bulundu

@@ -13,6 +13,7 @@ import {Modal} from "react-bootstrap";
 import Calendar from "../../components/calendar/CalendarTR";
 import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import {SplitButton} from 'primereact/components/splitbutton/SplitButton';
+import {BreadCrumb} from 'primereact/components/breadcrumb/BreadCrumb';
 
 
 export default class Policy extends Component {
@@ -199,8 +200,12 @@ export default class Policy extends Component {
                       options={brands} onChange={this.onBrandChange}/>
 
         return (
-            <Card header="Poliçe Yönetimi"
-                  loading={this.state.loading}>
+            <Card loading={this.state.loading}>
+                <BreadCrumb model={[
+                    {label: 'Site'},
+                    {label: 'Poliçe Yönetimi'}
+                ]}/>
+
                 <div className="content-section implementation">
                     {this.state.policyList ? this.state.policyList.length : 0} kayıt bulundu
                     <DataTable value={this.state.policyList}

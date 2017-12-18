@@ -15,6 +15,8 @@ import FaIcon from "robe-react-ui/lib/faicon/FaIcon";
 import {InputSwitch} from 'primereact/components/inputswitch/InputSwitch';
 import {InputMask} from 'primereact/components/inputmask/InputMask';
 import Loading from "../../components/loadingbar/Loading";
+import {Message} from 'primereact/components/message/Message';
+import {Messages} from 'primereact/components/messages/Messages';
 
 export default class CustomerOzel extends Component {
 
@@ -431,6 +433,9 @@ export default class CustomerOzel extends Component {
                                                 filterPlaceholder="Şirket Ara"
                                                 filterBy="label,value"
                                             />
+                                            <Messages
+                                                style={{padding: '1px 1px'}}
+                                                value={this.state.companyMessages}/>
                                         </div>
                                     </div>
 
@@ -451,6 +456,9 @@ export default class CustomerOzel extends Component {
                                                       filterPlaceholder="Poliçe Türü Ara"
                                                       filterBy="label,value"
                                             />
+                                            <Messages
+                                                style={{padding: '1px 2px'}}
+                                                value={this.state.companyPolicyTypeMessages} />
                                         </div>
                                     </div>
 
@@ -671,10 +679,12 @@ export default class CustomerOzel extends Component {
                 policy[property] = selected;
                 policy["companyPolicyType"] = {};
                 this.__getAllCompanyPolicyType(selected);
+                this.setState({companyMessages: []});
                 break;
             case "companyPolicyType":
                 const selectedCompanyPolicyType = this.state.companyPolicyTypeList.find(o => o.value === value);
                 policy[property] = selectedCompanyPolicyType;
+                this.setState({companyPolicyTypeMessages: []});
                 break;
         }
         this.setState({policy: policy});
@@ -683,7 +693,6 @@ export default class CustomerOzel extends Component {
     __onSelectionChange(date) {
         this.setState({selectedCustomer: date, policyAddButtonDisable: false});
     }
-
 
     __detailButton(rowData, column) {
         let selectedCustomer = column.rowData;
@@ -739,20 +748,32 @@ export default class CustomerOzel extends Component {
     __savePolicy() {
 
         let policy = this.state.policy;
-        //policy.startDate = this.__formatDate(policy.startDate);
-        this.request = new AjaxRequest({
-            url: "policy",
-            type: "POST"
-        });
-        this.request.call(policy, undefined, function (response) {
-            if (response != null) {
-                Toast.success("Kayıt Başarılı");
-                this.setState({selectedCustomer: null, displayDialogPolicy: false, policy: null, loading: false});
-            } else {
-                Toast.error("Kayıt Başarısız")
-            }
-            this.forceUpdate();
-        }.bind(this));
+        if (policy.company === undefined || policy.company.label === undefined) {
+            this.setState({
+                companyMessages: [{severity: 'error', detail: 'Zorunlu alan'}]
+            });
+        }
+        if (policy.companyPolicyType === undefined || policy.companyPolicyType.label === undefined) {
+            this.setState({
+                companyPolicyTypeMessages: [{severity: 'error', detail: 'Zorunlu alan'}],
+
+            });
+        } else {
+            //policy.startDate = this.__formatDate(policy.startDate);
+            this.request = new AjaxRequest({
+                url: "policy",
+                type: "POST"
+            });
+            this.request.call(policy, undefined, function (response) {
+                if (response != null) {
+                    Toast.success("Kayıt Başarılı");
+                    this.setState({selectedCustomer: null, displayDialogPolicy: false, policy: null, loading: false});
+                } else {
+                    Toast.error("Kayıt Başarısız")
+                }
+                this.forceUpdate();
+            }.bind(this));
+        }
     }
 
     __delete() {

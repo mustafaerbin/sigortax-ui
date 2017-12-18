@@ -29,6 +29,7 @@ export default class CompanyPolicyType extends Component {
         this.__newCompanyPolicyTypeButton = this.__newCompanyPolicyTypeButton.bind(this);
         this.__saveCompanyPolicyType = this.__saveCompanyPolicyType.bind(this);
         this.__actionTemplate = this.__actionTemplate.bind(this);
+
     }
 
     onFilter(e) {
@@ -86,17 +87,16 @@ export default class CompanyPolicyType extends Component {
                 />
             </div>;
         return (
-            <Card header="Şirket Pöliçe Türü Yönetimi">
+            <Card header="Şirket Poliçe Türü Yönetimi">
                 <div>
                     <div className="content-section implementation">
                         {this.state.companyPolicyTypeList ? this.state.companyPolicyTypeList.length : 0} kayıt bulundu
                         <DataTable value={this.state.companyPolicyTypeList}
                                    paginator={true} rows={10} header={header}
+                                   rowsPerPageOptions={[10, 30, 50]}
                                    globalFilter={this.state.globalFilter}
                                    filters={this.state.filters}
-                                   selectionMode="single"
                                    footer={tableFooter}
-                                   selection={this.state.selectedCompanyPolicyType}
                             // onSelectionChange={(e) => {
                             //     this.setState({selectedCustomer: e.data, policyAddButtonDisable: false});
                             // }}
